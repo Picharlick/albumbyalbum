@@ -2,167 +2,80 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Soundlog — Feed</title>
   <link rel="stylesheet" href="css/styles.css" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.9.0/dist/tabler-icons.min.css" />
-  <!-- Supabase SDK -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
 
-  <nav class="navbar">
-    <div class="container">
-      <div class="navbar__inner">
-        <a href="index.html" class="navbar__logo display">Sound<span>log</span></a>
-        <nav class="navbar__nav">
-          <a href="index.html" class="navbar__link active"><i class="ti ti-home"></i> Feed</a>
-          <a href="pages/explorar.html" class="navbar__link"><i class="ti ti-compass"></i> Explorar</a>
-          <a href="pages/foros.html" class="navbar__link"><i class="ti ti-message-circle"></i> Foros</a>
-          <a href="pages/stats.html" class="navbar__link"><i class="ti ti-chart-bar"></i> Stats</a>
-        </nav>
-        <div class="navbar__search">
-          <i class="ti ti-search"></i>
-          <input type="text" placeholder="Buscar..." />
-        </div>
-        <div class="navbar__right">
-          <a href="pages/perfil.html" class="avatar avatar--md avatar--purple user-avatar">JM</a>
-          <button class="btn--ghost btn" onclick="logout()"><i class="ti ti-logout"></i></button>
-        </div>
-      </div>
-    </div>
-  </nav>
-
-  <main class="container">
-    <div class="page-grid">
-      
-      <aside>
-        <div class="card mb-16">
-          <div class="flex items-center gap-10 mb-12">
-            <a href="pages/perfil.html" class="avatar avatar--lg avatar--purple user-avatar">JM</a>
-            <div>
-              <div class="text-sm font-medium username-display" style="font-weight:500;">Cargando...</div>
-              <div class="text-sm text-muted"><span class="album-count">0</span> álbumes · <span class="review-count">0</span> reseñas</div>
-            </div>
-          </div>
-          <button class="btn btn--primary btn--sm w-100" onclick="openAddAlbumModal()" style="width:100%;">
-            <i class="ti ti-plus"></i> Agregar álbum
-          </button>
-        </div>
-
-        <div class="card mb-16">
-          <div class="section-label">Estadísticas</div>
-          <div class="grid-2">
-            <div class="stat-mini">
-              <div class="stat-mini__num album-count">0</div>
-              <div class="stat-mini__label">Álbumes</div>
-            </div>
-            <div class="stat-mini">
-              <div class="stat-mini__num review-count">0</div>
-              <div class="stat-mini__label">Reseñas</div>
-            </div>
-          </div>
-        </div>
-
-        <div class="card mb-16">
-          <div class="section-label">Géneros · esta semana</div>
-          <div class="genre-row">
-            <div class="genre-row__header"><span>Rock alternativo</span><span style="color:var(--accent-light);">42%</span></div>
-            <div class="genre-row__bar"><div class="genre-row__fill" style="width:42%;"></div></div>
-          </div>
-          <div class="genre-row">
-            <div class="genre-row__header"><span>Jazz</span><span style="color:var(--accent-light);">28%</span></div>
-            <div class="genre-row__bar"><div class="genre-row__fill" style="width:28%;"></div></div>
-          </div>
-          <div class="genre-row">
-            <div class="genre-row__header"><span>Post-rock</span><span style="color:var(--accent-light);">18%</span></div>
-            <div class="genre-row__bar"><div class="genre-row__fill" style="width:18%;"></div></div>
-          </div>
-        </div>
-
-        <div class="card">
-          <div class="section-label">Mis listas</div>
-          <ul>
-            <li style="padding:6px 0; border-bottom:1px solid var(--border);">
-              <a href="pages/perfil.html" class="flex items-center gap-8 text-sm" style="color:var(--text-secondary);">
-                <i class="ti ti-check" style="color:var(--green);"></i> Álbumes escuchados
-                <span class="text-hint" style="margin-left:auto;" id="sidebar-album-count">0</span>
-              </a>
-            </li>
-            <li style="padding:6px 0; border-bottom:1px solid var(--border);">
-              <a href="#" class="flex items-center gap-8 text-sm" style="color:var(--text-secondary);">
-                <i class="ti ti-bookmark" style="color:var(--accent-light);"></i> Quiero escuchar
-                <span class="text-hint" style="margin-left:auto;">0</span>
-              </a>
-            </li>
-            <li style="padding:6px 0;">
-              <a href="#" class="flex items-center gap-8 text-sm" style="color:var(--text-secondary);">
-                <i class="ti ti-list" style="color:#ff9070;"></i> Mis listas
-                <span class="text-hint" style="margin-left:auto;">0</span>
-              </a>
-            </li>
-          </ul>
-        </div>
-      </aside>
-
-      <section>
-        <div class="feed-tabs" style="margin-bottom: 16px;">
-          <button class="feed-tab active" onclick="switchTab(this)">Amigos</button>
-          <button class="feed-tab" onclick="switchTab(this)">Global</button>
-          <button class="feed-tab" onclick="switchTab(this)">Popular</button>
-        </div>
-        <div class="card" id="feed-container"></div>
-      </section>
-
-      <aside>
-        <div class="card mb-16">
-          <div class="section-label">🎯 Tips</div>
-          <p class="text-sm text-muted">Agrega álbumes que has escuchado, califícalos y comparte tus reseñas.</p>
-        </div>
-        <div class="card">
-          <div class="section-label">📊 Tu progreso</div>
-          <div class="text-center p-12">
-            <div style="font-size:36px;" class="album-count">0</div>
-            <div class="text-sm text-muted">álbumes registrados</div>
-          </div>
-        </div>
-      </aside>
-
-    </div>
-  </main>
-
-  <div id="addAlbumModal" class="modal">
-    <div class="modal__content">
-      <div class="modal__header">
-        <h3>Registrar álbum escuchado</h3>
-        <span class="modal__close" onclick="closeModal('addAlbumModal')">&times;</span>
-      </div>
-      <div class="modal__body">
-        <div class="form-group"><label>Álbum *</label><input type="text" id="albumTitle" placeholder="Ej: In Rainbows"></div>
-        <div class="form-group"><label>Artista *</label><input type="text" id="albumArtist" placeholder="Ej: Radiohead"></div>
-        <div class="form-group"><label>Año</label><input type="number" id="albumYear" placeholder="2007"></div>
-        <div class="form-group"><label>Género</label><input type="text" id="albumGenre" placeholder="Rock alternativo"></div>
-        <div class="form-group"><label>Calificación</label><select id="albumRating"><option value="5">★★★★★ (5)</option><option value="4">★★★★☆ (4)</option><option value="3">★★★☆☆ (3)</option><option value="2">★★☆☆☆ (2)</option><option value="1">★☆☆☆☆ (1)</option></select></div>
-        <div class="form-group"><label>Fecha que lo escuchaste</label><input type="date" id="listenDate"></div>
-        <div class="form-group"><label>Reseña (opcional)</label><textarea id="albumReview" rows="3" placeholder="¿Qué te pareció?"></textarea></div>
-      </div>
-      <div class="modal__footer">
-        <button class="btn btn--secondary" onclick="closeModal('addAlbumModal')">Cancelar</button>
-        <button class="btn btn--primary" onclick="submitAlbum()">Guardar</button>
+<nav class="navbar">
+  <div class="container">
+    <div class="navbar__inner">
+      <a href="index.html" class="navbar__logo display">Sound<span>log</span></a>
+      <nav class="navbar__nav">
+        <a href="index.html" class="navbar__link active">Feed</a>
+        <a href="pages/explorar.html" class="navbar__link">Explorar</a>
+        <a href="pages/foros.html" class="navbar__link">Foros</a>
+        <a href="pages/stats.html" class="navbar__link">Stats</a>
+      </nav>
+      <div class="navbar__right">
+        <a href="pages/perfil.html" class="avatar avatar--md avatar--purple user-avatar">U</a>
+        <button class="btn--ghost btn" onclick="logout()"><i class="ti ti-logout"></i></button>
       </div>
     </div>
   </div>
+</nav>
 
-  <div class="toast"></div>
-  <script src="js/main.js"></script>
-  <script>
-    function switchTab(btn) {
-      document.querySelectorAll('.feed-tab').forEach(t => t.classList.remove('active'));
-      btn.classList.add('active');
-      const tabText = btn.textContent.trim().toLowerCase();
-      currentFeedTab = tabText === 'amigos' ? 'amigos' : (tabText === 'popular' ? 'popular' : 'global');
-      loadFeed();
-    }
-  </script>
+<main class="container">
+  <div class="page-grid">
+    <aside>
+      <div class="card mb-16">
+        <div class="flex items-center gap-10 mb-12">
+          <div class="avatar avatar--lg avatar--purple user-avatar">U</div>
+          <div>
+            <div class="text-sm font-medium username-display">Cargando...</div>
+            <div class="text-sm text-muted"><span class="album-count">0</span> álbumes</div>
+          </div>
+        </div>
+        <button class="btn btn--primary btn--sm w-100" onclick="openAddAlbumModal()" style="width:100%">+ Agregar álbum</button>
+      </div>
+    </aside>
+
+    <section>
+      <div class="card" id="feed-container">
+        <div class="empty-state">Cargando feed...</div>
+      </div>
+    </section>
+
+    <aside>
+      <div class="card">
+        <div class="section-label">Tu progreso</div>
+        <div class="text-center p-12">
+          <div style="font-size:36px" class="album-count">0</div>
+          <div class="text-sm text-muted">álbumes</div>
+        </div>
+      </div>
+    </aside>
+  </div>
+</main>
+
+<div id="addAlbumModal" class="modal">
+  <div class="modal__content">
+    <div class="modal__header"><h3>Agregar álbum</h3><span class="modal__close" onclick="closeModal('addAlbumModal')">&times;</span></div>
+    <div class="modal__body">
+      <input type="text" id="albumTitle" placeholder="Álbum"><br><br>
+      <input type="text" id="albumArtist" placeholder="Artista"><br><br>
+      <select id="albumRating"><option value="5">5 estrellas</option><option value="4">4 estrellas</option><option value="3">3 estrellas</option><option value="2">2 estrellas</option><option value="1">1 estrella</option></select><br><br>
+      <textarea id="albumReview" placeholder="Tu reseña..."></textarea>
+    </div>
+    <div class="modal__footer"><button class="btn btn--secondary" onclick="closeModal('addAlbumModal')">Cancelar</button><button class="btn btn--primary" onclick="submitAlbum()">Guardar</button></div>
+  </div>
+</div>
+
+<div class="toast"></div>
+
+<script src="js/main.js"></script>
 </body>
 </html>
