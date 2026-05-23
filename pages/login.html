@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Soundlog — Iniciar sesión</title>
+  <link rel="stylesheet" href="/albumbyalbum/css/styles.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.9.0/dist/tabler-icons.min.css">
+  <style>
+    .auth-container {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, #0d0d0f 0%, #0a0a0c 100%);
+    }
+    .auth-card {
+      background: #1a1a1e;
+      border: 1px solid rgba(255,255,255,0.07);
+      border-radius: 16px;
+      padding: 40px;
+      width: 100%;
+      max-width: 420px;
+    }
+    .auth-card h1 {
+      text-align: center;
+      margin-bottom: 32px;
+      font-size: 1.5rem;
+    }
+    .navbar__logo {
+      font-family: 'Instrument Serif', serif;
+      font-size: 2rem;
+      text-align: center;
+      margin-bottom: 24px;
+      display: block;
+    }
+    .navbar__logo span { color: #a89cf9; }
+    .btn-full { width: 100%; justify-content: center; }
+    .auth-switch {
+      text-align: center;
+      margin-top: 24px;
+      font-size: 0.85rem;
+      color: #9b9aaa;
+    }
+    .auth-switch a {
+      color: #a89cf9;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <div class="auth-container">
+    <div class="auth-card">
+      <div class="navbar__logo">Sound<span>log</span></div>
+      <h1 id="auth-title">Iniciar sesión</h1>
+      
+      <div id="login-form">
+        <div class="form-group">
+          <label>Usuario</label>
+          <input type="text" id="login-username" placeholder="ej: juan_music">
+        </div>
+        <div class="form-group">
+          <label>Contraseña</label>
+          <input type="password" id="login-password" placeholder="••••••••">
+        </div>
+        <button class="btn btn--primary btn-full" onclick="handleLogin()">
+          <i class="ti ti-login"></i> Iniciar sesión
+        </button>
+      </div>
+      
+      <div id="register-form" style="display: none;">
+        <div class="form-group">
+          <label>Usuario</label>
+          <input type="text" id="register-username" placeholder="mi_usuario">
+        </div>
+        <div class="form-group">
+          <label>Email</label>
+          <input type="email" id="register-email" placeholder="usuario@ejemplo.com">
+        </div>
+        <div class="form-group">
+          <label>Contraseña</label>
+          <input type="password" id="register-password" placeholder="••••••••">
+        </div>
+        <div class="form-group">
+          <label>Confirmar contraseña</label>
+          <input type="password" id="register-confirm" placeholder="••••••••">
+        </div>
+        <div class="form-group">
+          <label>¿Cómo te llamas?</label>
+          <input type="text" id="register-name" placeholder="Tu nombre">
+        </div>
+        <button class="btn btn--primary btn-full" onclick="handleRegister()">
+          <i class="ti ti-user-plus"></i> Registrarse
+        </button>
+      </div>
+      
+      <div class="auth-switch">
+        <span id="switch-text">¿No tienes cuenta? <a onclick="toggleAuthMode()">Regístrate</a></span>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast"></div>
+
+  <script>
+    const STORAGE_KEYS = {
+      USERS: 'soundlog_users',
+      CURRENT_USER: 'soundlog_current_user'
+    };
+
+    let isLoginMode = true;
+
+    function toggleAuthMode() {
+      isLoginMode = !isLoginMode;
+      const loginForm = document.getElementById('login-form');
+      const registerForm = document.getElementById('register-form');
+      const title = document.getElementById('auth-title');
+      const switchText = document.getElementById('switch-text');
+      
+      if (isLoginMode) {
+        loginForm.style.display = 'block';
+        registerForm.style.display = 'none';
+        title.textContent = 'Iniciar sesión';
+        switchText.innerHTML = '¿No tienes cuenta? <a onclick="toggleAuthMode()">Regístrate</a>';
+      } else {
+        loginForm.style.display = 'none';
+        registerForm.style.display = 'block';
+        title.textContent = 'Registrarse';
+        switchText.innerHTML = '¿Ya tienes cuenta? <a onclick="toggleAuthMode()">Inicia sesión</a>';
+      }
+    }
+
+    function showToast(message, type) {
+      let toast = document.querySelector('.toast');
+      if (!toast) {
+        toast = document.createElement('div');
+        toast.className = 'toast';
+        document.body.appendChild(toast);
+      }
+      toast.className = `toast ${type}`;
+      toast.innerHTML = `<i class="ti ti-${type === 'success' ? 'check' : 'alert-circle'}"></i> ${message}`;
+      toast.classList.add('show');
+      setTimeout(() => toast.classList.remove('show'), 3000);
+    }
+
+    function handleLogin() {
+      const username = document.getElementById('login-username').value.trim();
+      const password = document.getElementById('login-password').value;
+      
+      if (!username) {
+        showToast('Ingresa tu usuario', 'error');
+        return;
+      }
+      
+      const users = JSON.parse(localStorage.getItem(STORAGE_KEYS.USERS) || '{}');
+      
+      if (users[username]) {
+        localStorage.setItem(STORAGE_KEYS.CURRENT_USER, JSON.stringify(users[username]));
+        showToast('¡Bienvenido!', 'success');
+        setTimeout(() => {
+          window.location.href = '/albumbyalbum/';
+        }, 500);
+      } else {
+        showToast('Usuario no encontrado', 'error');
+      }
+    }
+
+    function handleRegister() {
+      const username = document.getElementById('register-username').value.trim();
+      const email = document.getElementById('register-email').value.trim();
+      const password = document.getElementById('register-password').value;
+      const confirm = document.getElementById('register-confirm').value;
+      const name = document.getElementById('register-name').value.trim();
+      
+      if (!username || !email || !password) {
+        showToast('Completa todos los campos', 'error');
+        return;
+      }
+      
+      if (password !== confirm) {
+        showToast('Las contraseñas no coinciden', 'error');
+        return;
+      }
+      
+      if (password.length < 4) {
+        showToast('La contraseña debe tener al menos 4 caracteres', 'error');
+        return;
+      }
+      
+      const users = JSON.parse(localStorage.getItem(STORAGE_KEYS.USERS) || '{}');
+      
+      if (users[username]) {
+        showToast('Ese usuario ya existe', 'error');
+        return;
+      }
+      
+      const newUser = {
+        id: 'user_' + Date.now(),
+        username: username,
+        displayName: name || username,
+        email: email,
+        bio: 'Amante de la música',
+        avatar: username.substring(0, 2).toUpperCase(),
+        avatarColor: ['purple', 'coral', 'teal', 'pink'][Math.floor(Math.random() * 4)],
+        joinedAt: new Date().toISOString(),
+        followingCount: 0,
+        followersCount: 0
+      };
+      
+      users[username] = newUser;
+      localStorage.setItem(STORAGE_KEYS.USERS, JSON.stringify(users));
+      localStorage.setItem(STORAGE_KEYS.CURRENT_USER, JSON.stringify(newUser));
+      
+      showToast('¡Registro exitoso!', 'success');
+      setTimeout(() => {
+        window.location.href = '/albumbyalbum/';
+      }, 500);
+    }
+
+    // Verificar si ya hay sesión activa
+    const savedUser = localStorage.getItem(STORAGE_KEYS.CURRENT_USER);
+    if (savedUser && !window.location.pathname.includes('login.html')) {
+      window.location.href = '/albumbyalbum/';
+    }
+  </script>
+</body>
+</html>
