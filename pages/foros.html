@@ -42,7 +42,6 @@
       </button>
     </div>
 
-    <!-- Filtros -->
     <div class="flex gap-8 mb-24 wrap">
       <button class="btn btn--secondary btn--sm filter-btn active" onclick="filterForums('todos', this)">📌 Todos</button>
       <button class="btn btn--secondary btn--sm filter-btn" onclick="filterForums('rock', this)">🎸 Rock</button>
@@ -53,7 +52,6 @@
       <button class="btn btn--secondary btn--sm filter-btn" onclick="filterForums('metal', this)">🤘 Metal</button>
     </div>
 
-    <!-- Foros destacados -->
     <div class="section-label mb-12">🔥 FOROS DESTACADOS</div>
     <div id="featured-forums" class="mb-24">
       <div class="card mb-12">
@@ -80,7 +78,6 @@
     <div id="forums-container"></div>
   </main>
 
-  <!-- MODAL CREAR FORO -->
   <div id="createForumModal" class="modal">
     <div class="modal__content">
       <div class="modal__header">
@@ -116,10 +113,10 @@
     </div>
   </div>
 
-  <!-- MODAL VER FORO -->
   <div id="forumViewModal" class="modal"></div>
 
   <div class="toast"></div>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="/albumbyalbum/js/main.js"></script>
 
   <script>
