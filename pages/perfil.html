@@ -3,9 +3,58 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Soundlog — Perfil</title>
+  <title>Soundlog — Mi Perfil</title>
   <link rel="stylesheet" href="/albumbyalbum/css/styles.css" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.9.0/dist/tabler-icons.min.css" />
+  <style>
+    .profile-tab {
+      padding: 12px 20px;
+      font-size: 0.85rem;
+      font-weight: 500;
+      color: var(--text-muted);
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+      background: none;
+      font-family: inherit;
+      transition: all var(--transition);
+    }
+    .profile-tab:hover { color: var(--text-primary); }
+    .profile-tab.active { color: var(--accent-light); border-bottom-color: var(--accent-light); }
+    .profile-header {
+      background: var(--bg-card);
+      border-bottom: 1px solid var(--border);
+      padding: 32px 0 0;
+      margin-bottom: 24px;
+    }
+    .fav-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; }
+    .fav-item {
+      aspect-ratio: 1;
+      border-radius: var(--radius-md);
+      background: var(--bg-secondary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 28px;
+      cursor: pointer;
+      transition: all var(--transition);
+      border: 1px solid var(--border);
+      position: relative;
+      overflow: hidden;
+    }
+    .fav-item:hover { border-color: var(--accent); transform: scale(1.03); }
+    .fav-item__label {
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      background: rgba(0,0,0,0.75);
+      font-size: 0.62rem;
+      color: var(--text-primary);
+      padding: 4px 6px;
+      text-align: center;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+  </style>
 </head>
 <body>
 
@@ -21,77 +70,69 @@
           <a href="/albumbyalbum/pages/stats.html" class="navbar__link"><i class="ti ti-chart-bar"></i> Stats</a>
         </nav>
         <div class="navbar__search">
-          <i class="ti ti-search" style="flex-shrink:0;"></i>
+          <i class="ti ti-search"></i>
           <input type="text" placeholder="Buscar álbumes, artistas..." />
         </div>
         <div class="navbar__right">
-          <button class="btn--ghost btn"><i class="ti ti-bell" style="font-size:18px;"></i></button>
           <a href="/albumbyalbum/pages/perfil.html" class="avatar avatar--md avatar--purple user-avatar">JM</a>
-          <button class="btn--ghost btn" onclick="logout()" title="Cerrar sesión">
-            <i class="ti ti-logout" style="font-size:18px;"></i>
-          </button>
+          <button class="btn--ghost btn" onclick="logout()"><i class="ti ti-logout"></i></button>
         </div>
       </div>
     </div>
   </nav>
 
   <!-- PROFILE HEADER -->
-  <div class="profile-header" style="background: var(--bg-card); border-bottom: 1px solid var(--border); padding: 32px 0 0; margin-bottom: 24px;">
+  <div class="profile-header">
     <div class="container">
-      <div class="flex items-end gap-24" style="padding-bottom: 20px;">
+      <div class="flex items-end gap-24" style="padding-bottom: 20px; flex-wrap: wrap;">
         <div class="avatar avatar--xxl avatar--purple user-avatar">JM</div>
-        <div style="flex:1;">
+        <div style="flex:1; min-width: 200px;">
           <div style="display:flex; align-items:center; gap:12px; margin-bottom:6px; flex-wrap:wrap;">
-            <h1 class="display" style="font-size:1.8rem;" id="profile-username">juan_music</h1>
-            <span class="badge badge--green"><i class="ti ti-brand-spotify"></i> Conectado</span>
+            <h1 class="display" style="font-size:1.8rem;" id="profile-username">Cargando...</h1>
+            <span class="badge badge--green"><i class="ti ti-calendar"></i> Miembro desde 2024</span>
           </div>
           <p style="font-size:0.9rem; color:var(--text-secondary); margin-bottom:12px; max-width:480px;" id="profile-bio">
-            Melómano empedernido. Vivo entre el post-rock y el jazz. Lima, Perú.
+            <i class="ti ti-edit"></i> Añade una descripción a tu perfil
           </p>
           <div class="flex gap-16 wrap" style="font-size:0.85rem; color:var(--text-muted); margin-bottom:12px;">
-            <span><strong id="profile-albums" style="color:var(--text-primary);">342</strong> álbumes</span>
-            <span><strong id="profile-reviews" style="color:var(--text-primary);">58</strong> reseñas</span>
-            <span><strong id="profile-following" style="color:var(--text-primary);">127</strong> siguiendo</span>
-            <span><strong id="profile-followers" style="color:var(--text-primary);">89</strong> seguidores</span>
+            <span><strong id="profile-albums" style="color:var(--text-primary);">0</strong> álbumes</span>
+            <span><strong id="profile-reviews" style="color:var(--text-primary);">0</strong> reseñas</span>
+            <span><strong id="profile-following" style="color:var(--text-primary);">0</strong> siguiendo</span>
+            <span><strong id="profile-followers" style="color:var(--text-primary);">0</strong> seguidores</span>
           </div>
           <div class="flex gap-8">
-            <button class="btn btn--secondary btn--sm">
-              <i class="ti ti-user-plus"></i> Seguir
+            <button class="btn btn--primary btn--sm" onclick="openAddAlbumModal()">
+              <i class="ti ti-plus"></i> Agregar álbum
             </button>
-            <button class="btn btn--ghost btn--sm">
-              <i class="ti ti-dots"></i>
-            </button>
-            <button class="btn btn--primary btn--sm" onclick="openAddReviewModal()">
-              <i class="ti ti-edit"></i> Reseñar
+            <button class="btn btn--secondary btn--sm" onclick="editProfile()">
+              <i class="ti ti-edit"></i> Editar perfil
             </button>
           </div>
         </div>
         <div class="card" style="min-width:160px; text-align:center;">
-          <div class="section-label" style="text-align:center;">Artista del mes</div>
-          <div style="font-size:42px; margin-bottom:6px;">🎸</div>
-          <div style="font-size:0.9rem; font-weight:500;">Radiohead</div>
-          <div class="text-xs text-muted" style="margin-top:2px;">148 escuchas</div>
+          <div class="section-label" style="text-align:center;">Total escuchas</div>
+          <div style="font-size:42px; margin-bottom:6px;" id="totalAlbumsStat">0</div>
+          <div class="text-xs text-muted">álbumes registrados</div>
           <div class="divider"></div>
-          <div class="section-label" style="text-align:center; margin-bottom:4px;">Esta semana</div>
-          <div style="font-size:0.85rem; font-weight:500;">Miles Davis</div>
-          <div class="text-xs text-muted">34 escuchas</div>
+          <div class="section-label" style="text-align:center; margin-bottom:4px;">Calificación media</div>
+          <div style="font-size:0.9rem; font-weight:500;" id="avgRating">--</div>
         </div>
       </div>
 
       <!-- Tabs del perfil -->
-      <div class="flex" style="gap: 0; border-top: 1px solid var(--border); margin-top: 4px;">
-        <button class="profile-tab active" onclick="switchProfileTab(this, 'actividad')" style="padding: 12px 20px; font-size: 0.85rem; font-weight: 500; color: var(--text-muted); cursor: pointer; border-bottom: 2px solid transparent; background: none; font-family: inherit;">Actividad</button>
-        <button class="profile-tab" onclick="switchProfileTab(this, 'albums')" style="padding: 12px 20px; font-size: 0.85rem; font-weight: 500; color: var(--text-muted); cursor: pointer; border-bottom: 2px solid transparent; background: none; font-family: inherit;">Álbumes</button>
-        <button class="profile-tab" onclick="switchProfileTab(this, 'favoritos')" style="padding: 12px 20px; font-size: 0.85rem; font-weight: 500; color: var(--text-muted); cursor: pointer; border-bottom: 2px solid transparent; background: none; font-family: inherit;">Favoritos</button>
-        <button class="profile-tab" onclick="switchProfileTab(this, 'listas')" style="padding: 12px 20px; font-size: 0.85rem; font-weight: 500; color: var(--text-muted); cursor: pointer; border-bottom: 2px solid transparent; background: none; font-family: inherit;">Listas</button>
-        <button class="profile-tab" onclick="switchProfileTab(this, 'reseñas')" style="padding: 12px 20px; font-size: 0.85rem; font-weight: 500; color: var(--text-muted); cursor: pointer; border-bottom: 2px solid transparent; background: none; font-family: inherit;">Reseñas</button>
+      <div class="flex" style="gap: 0; border-top: 1px solid var(--border); margin-top: 4px; flex-wrap: wrap;">
+        <button class="profile-tab active" onclick="switchProfileTab(this, 'actividad')">📊 Actividad</button>
+        <button class="profile-tab" onclick="switchProfileTab(this, 'albums')">💿 Álbumes</button>
+        <button class="profile-tab" onclick="switchProfileTab(this, 'reseñas')">✍️ Reseñas</button>
+        <button class="profile-tab" onclick="switchProfileTab(this, 'favoritos')">⭐ Favoritos</button>
+        <button class="profile-tab" onclick="switchProfileTab(this, 'stats')">📈 Estadísticas</button>
       </div>
     </div>
   </div>
 
   <!-- CONTENT -->
   <main class="container">
-    <div style="display:grid; grid-template-columns:1fr 280px; gap:24px; align-items:start;">
+    <div style="display:grid; grid-template-columns:1fr 300px; gap:24px; align-items:start;">
 
       <!-- PANEL PRINCIPAL -->
       <div>
@@ -99,59 +140,59 @@
         <!-- TAB: ACTIVIDAD -->
         <div id="tab-actividad">
           <div class="card mb-16">
-            <div class="section-label">Escuchadas recientemente</div>
-            <div class="recent-tracks-container"></div>
+            <div class="section-label">📅 Actividad reciente</div>
+            <div id="recent-activity-container">
+              <div class="empty-state"><i class="ti ti-clock"></i><p>Aún no hay actividad</p></div>
+            </div>
           </div>
-          <div class="card mb-16">
-            <div class="section-label">Actividad del año — 2025</div>
-            <div class="heatmap" id="heatmap"></div>
-            <div class="flex gap-8 items-center" style="margin-top:10px; justify-content:flex-end;">
-              <span class="text-xs text-muted">Menos</span>
-              <div style="width:10px;height:10px;border-radius:2px;background:var(--bg-hover);"></div>
-              <div style="width:10px;height:10px;border-radius:2px;" class="hm-cell l1"></div>
-              <div style="width:10px;height:10px;border-radius:2px;" class="hm-cell l2"></div>
-              <div style="width:10px;height:10px;border-radius:2px;" class="hm-cell l3"></div>
-              <div style="width:10px;height:10px;border-radius:2px;" class="hm-cell l4"></div>
-              <span class="text-xs text-muted">Más</span>
+          <div class="card">
+            <div class="section-label">🔥 Racha de escuchas</div>
+            <div class="text-center p-12">
+              <div style="font-size:48px;" id="streakDays">0</div>
+              <div class="text-muted">días seguidos</div>
             </div>
           </div>
         </div>
 
         <!-- TAB: ÁLBUMES -->
         <div id="tab-albums" style="display:none;">
-          <div class="card" id="user-albums-container"></div>
-        </div>
-
-        <!-- TAB: FAVORITOS -->
-        <div id="tab-favoritos" style="display:none;">
-          <div class="card mb-16">
-            <div class="section-label">Álbumes favoritos</div>
-            <div class="fav-grid"></div>
-          </div>
-          <div class="card mb-16">
-            <div class="section-label">Artistas favoritos</div>
-            <div class="fav-grid"></div>
-          </div>
-          <div class="card">
-            <div class="section-label">Géneros favoritos</div>
-            <div class="flex gap-8 wrap favorite-genres-container"></div>
-          </div>
-        </div>
-
-        <!-- TAB: LISTAS -->
-        <div id="tab-listas" style="display:none;">
-          <div class="card">
-            <div class="empty-state">
-              <i class="ti ti-list"></i>
-              <p>No hay listas creadas aún</p>
-              <button class="btn btn--primary btn--sm mt-8">Crear primera lista</button>
-            </div>
+          <div class="card" id="user-albums-container">
+            <div class="empty-state"><i class="ti ti-album"></i><p>Todavía no has agregado ningún álbum</p><button class="btn btn--primary btn--sm mt-8" onclick="openAddAlbumModal()">Agregar mi primer álbum</button></div>
           </div>
         </div>
 
         <!-- TAB: RESEÑAS -->
         <div id="tab-reseñas" style="display:none;">
-          <div class="card" id="user-reviews-container"></div>
+          <div class="card" id="user-reviews-container">
+            <div class="empty-state"><i class="ti ti-edit"></i><p>No has escrito ninguna reseña aún</p><button class="btn btn--primary btn--sm mt-8" onclick="openAddAlbumModal()">Escribir primera reseña</button></div>
+          </div>
+        </div>
+
+        <!-- TAB: FAVORITOS -->
+        <div id="tab-favoritos" style="display:none;">
+          <div class="card mb-16">
+            <div class="section-label">🎵 Álbumes favoritos</div>
+            <div class="fav-grid" id="fav-albums-grid">
+              <div class="empty-state" style="grid-column:1/-1;">No hay favoritos aún</div>
+            </div>
+          </div>
+          <div class="card mb-16">
+            <div class="section-label">🎤 Artistas favoritos</div>
+            <div class="fav-grid" id="fav-artists-grid">
+              <div class="empty-state" style="grid-column:1/-1;">No hay favoritos aún</div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="section-label">🎸 Géneros favoritos</div>
+            <div class="flex gap-8 wrap" id="fav-genres-container"></div>
+          </div>
+        </div>
+
+        <!-- TAB: ESTADÍSTICAS -->
+        <div id="tab-stats" style="display:none;">
+          <div class="card" id="user-stats-container">
+            <div class="empty-state"><i class="ti ti-chart-bar"></i><p>Agrega álbumes para ver tus estadísticas</p></div>
+          </div>
         </div>
 
       </div>
@@ -159,52 +200,23 @@
       <!-- SIDEBAR DERECHA -->
       <aside>
         <div class="card mb-16">
-          <div class="section-label">Top artistas · mes</div>
-          <div class="sidebar-item" style="padding-top:0;">
-            <span style="font-size:0.72rem;color:var(--text-muted);width:16px;text-align:right;">1</span>
-            <div style="width:32px;height:32px;border-radius:var(--radius-sm);background:var(--bg-hover);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;">🎸</div>
-            <div class="sidebar-item__info"><div class="sidebar-item__name">Radiohead</div><div class="sidebar-item__sub">148 escuchas</div></div>
-          </div>
-          <div class="sidebar-item">
-            <span style="font-size:0.72rem;color:var(--text-muted);width:16px;text-align:right;">2</span>
-            <div style="width:32px;height:32px;border-radius:var(--radius-sm);background:var(--bg-hover);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;">🎷</div>
-            <div class="sidebar-item__info"><div class="sidebar-item__name">Miles Davis</div><div class="sidebar-item__sub">87 escuchas</div></div>
-          </div>
-          <div class="sidebar-item">
-            <span style="font-size:0.72rem;color:var(--text-muted);width:16px;text-align:right;">3</span>
-            <div style="width:32px;height:32px;border-radius:var(--radius-sm);background:var(--bg-hover);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;">🔮</div>
-            <div class="sidebar-item__info"><div class="sidebar-item__name">Godspeed You!</div><div class="sidebar-item__sub">52 escuchas</div></div>
+          <div class="section-label">🏆 Logros desbloqueados</div>
+          <div class="flex gap-8 wrap" id="achievements-container">
+            <span class="badge badge--muted"><i class="ti ti-album"></i> Primer álbum</span>
           </div>
         </div>
 
         <div class="card mb-16">
-          <div class="section-label">Compatibilidad musical</div>
-          <p class="text-sm text-muted mb-8">¿Qué tan similares son tus gustos con otros usuarios?</p>
-          <div class="sidebar-item" style="padding-top:0;">
-            <div class="avatar avatar--sm avatar--coral">AM</div>
-            <div class="sidebar-item__info"><div class="sidebar-item__name">ana_melodies</div></div>
-            <div style="font-size:0.78rem; font-weight:600; color:var(--green);">94%</div>
-          </div>
-          <div class="sidebar-item">
-            <div class="avatar avatar--sm avatar--teal">CR</div>
-            <div class="sidebar-item__info"><div class="sidebar-item__name">carlos_rock</div></div>
-            <div style="font-size:0.78rem; font-weight:600; color:var(--green);">81%</div>
-          </div>
-          <div class="sidebar-item">
-            <div class="avatar avatar--sm avatar--pink">VP</div>
-            <div class="sidebar-item__info"><div class="sidebar-item__name">valeria_pop</div></div>
-            <div style="font-size:0.78rem; font-weight:600; color:#e8a838;">67%</div>
+          <div class="section-label">📊 Top artistas</div>
+          <div id="top-artists-container">
+            <div class="text-muted text-sm">Agrega álbumes para ver</div>
           </div>
         </div>
 
         <div class="card">
-          <div class="section-label">Logros</div>
-          <div class="flex gap-6 wrap">
-            <span title="Explorador de jazz" style="font-size:24px; cursor:help;">🎷</span>
-            <span title="100+ álbumes escuchados" style="font-size:24px; cursor:help;">💿</span>
-            <span title="Maratonista post-rock" style="font-size:24px; cursor:help;">🏔️</span>
-            <span title="Reseñador activo" style="font-size:24px; cursor:help;">✍️</span>
-            <span title="Miembro fundador" style="font-size:24px; cursor:help;">⭐</span>
+          <div class="section-label">🎯 Recomendaciones</div>
+          <div id="recommendations-container">
+            <div class="text-muted text-sm">Basado en tus gustos</div>
           </div>
         </div>
       </aside>
@@ -212,59 +224,102 @@
     </div>
   </main>
 
-  <!-- MODAL: Agregar reseña -->
-  <div id="addReviewModal" class="modal">
+  <!-- MODAL AGREGAR ÁLBUM -->
+  <div id="addAlbumModal" class="modal">
     <div class="modal__content">
       <div class="modal__header">
-        <h3>Reseñar álbum</h3>
-        <span class="modal__close" onclick="closeModal('addReviewModal')">&times;</span>
+        <h3>📀 Registrar álbum escuchado</h3>
+        <span class="modal__close" onclick="closeModal('addAlbumModal')">&times;</span>
       </div>
       <div class="modal__body">
         <div class="form-group">
-          <label>Álbum</label>
-          <input type="text" id="reviewAlbumTitle" placeholder="Ej: In Rainbows">
+          <label>Álbum *</label>
+          <input type="text" id="albumTitle" placeholder="Ej: In Rainbows">
         </div>
         <div class="form-group">
-          <label>Artista/Banda</label>
-          <input type="text" id="reviewArtist" placeholder="Ej: Radiohead">
+          <label>Artista *</label>
+          <input type="text" id="albumArtist" placeholder="Ej: Radiohead">
+        </div>
+        <div class="form-group">
+          <label>Año</label>
+          <input type="number" id="albumYear" placeholder="2007">
+        </div>
+        <div class="form-group">
+          <label>Género</label>
+          <input type="text" id="albumGenre" placeholder="Rock alternativo">
         </div>
         <div class="form-group">
           <label>Calificación</label>
-          <div class="rating-input">
-            <span class="rating-star">★</span>
-            <span class="rating-star">★</span>
-            <span class="rating-star">★</span>
-            <span class="rating-star">★</span>
-            <span class="rating-star">★</span>
-          </div>
+          <select id="albumRating">
+            <option value="5">★★★★★ (5) - Excelente</option>
+            <option value="4">★★★★☆ (4) - Muy bueno</option>
+            <option value="3">★★★☆☆ (3) - Bueno</option>
+            <option value="2">★★☆☆☆ (2) - Regular</option>
+            <option value="1">★☆☆☆☆ (1) - Malo</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Fecha que lo escuchaste</label>
+          <input type="date" id="listenDate">
         </div>
         <div class="form-group">
           <label>Reseña (opcional)</label>
-          <textarea id="reviewText" placeholder="Escribe tu opinión..."></textarea>
+          <textarea id="albumReview" rows="3" placeholder="¿Qué te pareció?"></textarea>
         </div>
       </div>
       <div class="modal__footer">
-        <button class="btn btn--secondary" onclick="closeModal('addReviewModal')">Cancelar</button>
-        <button class="btn btn--primary" onclick="submitReview()">Publicar reseña</button>
+        <button class="btn btn--secondary" onclick="closeModal('addAlbumModal')">Cancelar</button>
+        <button class="btn btn--primary" onclick="submitAlbum()">Guardar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL EDITAR PERFIL -->
+  <div id="editProfileModal" class="modal">
+    <div class="modal__content">
+      <div class="modal__header">
+        <h3>✏️ Editar perfil</h3>
+        <span class="modal__close" onclick="closeModal('editProfileModal')">&times;</span>
+      </div>
+      <div class="modal__body">
+        <div class="form-group">
+          <label>Biografía</label>
+          <textarea id="editBio" rows="3" placeholder="Cuéntanos sobre ti..."></textarea>
+        </div>
+      </div>
+      <div class="modal__footer">
+        <button class="btn btn--secondary" onclick="closeModal('editProfileModal')">Cancelar</button>
+        <button class="btn btn--primary" onclick="saveProfile()">Guardar cambios</button>
       </div>
     </div>
   </div>
 
   <div class="toast"></div>
-
-  <style>
-    .profile-tab.active {
-      color: var(--accent-light);
-      border-bottom-color: var(--accent-light);
-    }
-    .profile-tab:hover {
-      color: var(--text-primary);
-    }
-    .justify-content-center {
-      justify-content: center;
-    }
-  </style>
-
   <script src="/albumbyalbum/js/main.js"></script>
+  
+  <script>
+    function editProfile() {
+      document.getElementById('editBio').value = currentUser?.bio || '';
+      const modal = document.getElementById('editProfileModal');
+      if (modal) modal.classList.add('active');
+    }
+
+    function saveProfile() {
+      const newBio = document.getElementById('editBio').value;
+      if (currentUser) {
+        currentUser.bio = newBio;
+        // Actualizar en localStorage
+        const users = JSON.parse(localStorage.getItem('soundlog_users') || '{}');
+        if (users[currentUser.username]) {
+          users[currentUser.username].bio = newBio;
+          localStorage.setItem('soundlog_users', JSON.stringify(users));
+        }
+        localStorage.setItem('soundlog_current_user', JSON.stringify(currentUser));
+        document.getElementById('profile-bio').textContent = newBio || 'Añade una descripción a tu perfil';
+        showToast('Perfil actualizado', 'success');
+        closeModal('editProfileModal');
+      }
+    }
+  </script>
 </body>
 </html>
