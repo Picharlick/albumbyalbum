@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Soundlog — Estadísticas</title>
+  <link rel="stylesheet" href="/albumbyalbum/css/styles.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.9.0/dist/tabler-icons.min.css" />
+  <style>
+    .stat-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 20px;
+      text-align: center;
+    }
+    .stat-number {
+      font-size: 3rem;
+      font-weight: 600;
+      color: var(--accent-light);
+    }
+    .progress-bar {
+      height: 8px;
+      background: var(--bg-hover);
+      border-radius: 4px;
+      overflow: hidden;
+    }
+    .progress-fill {
+      height: 100%;
+      background: var(--accent);
+      border-radius: 4px;
+      transition: width 0.5s ease;
+    }
+  </style>
+</head>
+<body>
+
+  <nav class="navbar">
+    <div class="container">
+      <div class="navbar__inner">
+        <a href="/albumbyalbum/" class="navbar__logo display">Sound<span>log</span></a>
+        <nav class="navbar__nav">
+          <a href="/albumbyalbum/" class="navbar__link"><i class="ti ti-home"></i> Feed</a>
+          <a href="/albumbyalbum/pages/explorar.html" class="navbar__link"><i class="ti ti-compass"></i> Explorar</a>
+          <a href="/albumbyalbum/pages/foros.html" class="navbar__link"><i class="ti ti-message-circle"></i> Foros</a>
+          <a href="/albumbyalbum/pages/stats.html" class="navbar__link active"><i class="ti ti-chart-bar"></i> Stats</a>
+        </nav>
+        <div class="navbar__search">
+          <i class="ti ti-search"></i>
+          <input type="text" placeholder="Buscar..." />
+        </div>
+        <div class="navbar__right">
+          <a href="/albumbyalbum/pages/perfil.html" class="avatar avatar--md avatar--purple user-avatar">JM</a>
+          <button class="btn--ghost btn" onclick="logout()"><i class="ti ti-logout"></i></button>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <main class="container">
+    <div style="margin-bottom: 24px;">
+      <h1 class="display" style="font-size: 2rem;">Mis Estadísticas</h1>
+      <p class="text-muted">Visualiza tus hábitos musicales</p>
+    </div>
+
+    <!-- Tarjetas rápidas -->
+    <div class="grid-3" style="display:grid; grid-template-columns:repeat(3,1fr); gap:16px; margin-bottom:24px;">
+      <div class="stat-card">
+        <i class="ti ti-album" style="font-size:32px; color:var(--accent-light);"></i>
+        <div class="stat-number" id="totalAlbums">0</div>
+        <div class="text-muted">Álbumes escuchados</div>
+      </div>
+      <div class="stat-card">
+        <i class="ti ti-star" style="font-size:32px; color:var(--star);"></i>
+        <div class="stat-number" id="avgRating">0</div>
+        <div class="text-muted">Calificación promedio</div>
+      </div>
+      <div class="stat-card">
+        <i class="ti ti-calendar" style="font-size:32px; color:var(--green);"></i>
+        <div class="stat-number" id="streakDays">0</div>
+        <div class="text-muted">Días seguidos</div>
+      </div>
+    </div>
+
+    <!-- Distribución de calificaciones -->
+    <div class="card mb-24">
+      <div class="section-label">📊 DISTRIBUCIÓN DE CALIFICACIONES</div>
+      <div id="rating-distribution"></div>
+    </div>
+
+    <!-- Géneros más escuchados -->
+    <div class="card mb-24">
+      <div class="section-label">🎸 GÉNEROS MÁS ESCUCHADOS</div>
+      <div id="genres-container"></div>
+    </div>
+
+    <!-- Décadas favoritas -->
+    <div class="card mb-24">
+      <div class="section-label">📅 DÉCADAS FAVORITAS</div>
+      <div id="decades-container"></div>
+    </div>
+
+    <!-- Actividad por mes -->
+    <div class="card">
+      <div class="section-label">📈 ACTIVIDAD MENSUAL</div>
+      <div id="monthly-activity"></div>
+    </div>
+  </main>
+
+  <!-- MODAL AGREGAR ÁLBUM -->
+  <div id="addAlbumModal" class="modal">
+    <div class="modal__content">
+      <div class="modal__header">
+        <h3>📀 Registrar álbum escuchado</h3>
+        <span class="modal__close" onclick="closeModal('addAlbumModal')">&times;</span>
+      </div>
+      <div class="modal__body">
+        <div class="form-group">
+          <label>Álbum *</label>
+          <input type="text" id="albumTitle" placeholder="Ej: In Rainbows">
+        </div>
+        <div class="form-group">
+          <label>Artista *</label>
+          <input type="text" id="albumArtist" placeholder="Ej: Radiohead">
+        </div>
+        <div class="form-group">
+          <label>Año</label>
+          <input type="number" id="albumYear" placeholder="2007">
+        </div>
+        <div class="form-group">
+          <label>Género</label>
+          <input type="text" id="albumGenre" placeholder="Rock alternativo">
+        </div>
+        <div class="form-group">
+          <label>Calificación</label>
+          <select id="albumRating">
+            <option value="5">★★★★★ (5)</option>
+            <option value="4">★★★★☆ (4)</option>
+            <option value="3">★★★☆☆ (3)</option>
+            <option value="2">★★☆☆☆ (2)</option>
+            <option value="1">★☆☆☆☆ (1)</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Fecha que lo escuchaste</label>
+          <input type="date" id="listenDate">
+        </div>
+        <div class="form-group">
+          <label>Reseña (opcional)</label>
+          <textarea id="albumReview" rows="3" placeholder="¿Qué te pareció?"></textarea>
+        </div>
+      </div>
+      <div class="modal__footer">
+        <button class="btn btn--secondary" onclick="closeModal('addAlbumModal')">Cancelar</button>
+        <button class="btn btn--primary" onclick="submitAlbum()">Guardar</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast"></div>
+  <script src="/albumbyalbum/js/main.js"></script>
+
+  <script>
+    function loadStatsPage() {
+      const albums = getUserAlbums();
+      
+      document.getElementById('totalAlbums').textContent = albums.length;
+      
+      if (albums.length === 0) {
+        document.getElementById('avgRating').textContent = '--';
+        document.getElementById('streakDays').textContent = '0';
+        document.getElementById('rating-distribution').innerHTML = '<div class="empty-state"><p>Agrega álbumes para ver estadísticas</p></div>';
+        document.getElementById('genres-container').innerHTML = '<div class="empty-state"><p>Agrega álbumes para ver estadísticas</p></div>';
+        document.getElementById('decades-container').innerHTML = '<div class="empty-state"><p>Agrega álbumes para ver estadísticas</p></div>';
+        document.getElementById('monthly-activity').innerHTML = '<div class="empty-state"><p>Agrega álbumes para ver estadísticas</p></div>';
+        return;
+      }
+      
+      // Calificación promedio
+      const avg = albums.reduce((sum, a) => sum + a.rating, 0) / albums.length;
+      document.getElementById('avgRating').textContent = avg.toFixed(1);
+      
+      // Racha (simplificada)
+      const sortedDates = albums.map(a => a.listenDate).filter(d => d).sort();
+      let streak = 0;
+      if (sortedDates.length > 0) {
+        streak = 1;
+        for (let i = 1; i < sortedDates.length; i++) {
+          const diff = (new Date(sortedDates[i]) - new Date(sortedDates[i-1])) / (1000 * 60 * 60 * 24);
+          if (diff <= 1) streak++;
+          else break;
+        }
+      }
+      document.getElementById('streakDays').textContent = streak;
+      
+      // Distribución de calificaciones
+      const ratingDist = {1:0,2:0,3:0,4:0,5:0};
+      albums.forEach(a => ratingDist[a.rating]++);
+      const maxRating = Math.max(...Object.values(ratingDist));
+      
+      let ratingHtml = '';
+      for (let i = 5; i >= 1; i--) {
+        const percentage = maxRating > 0 ? (ratingDist[i] / maxRating) * 100 : 0;
+        ratingHtml += `
+          <div class="flex items-center gap-12 mb-8">
+            <div style="width:60px;"><span class="star">${'★'.repeat(i)}</span></div>
+            <div class="progress-bar" style="flex:1;"><div class="progress-fill" style="width:${percentage}%;"></div></div>
+            <div style="width:50px; text-align:right;" class="text-muted">${ratingDist[i]}</div>
+          </div>
+        `;
+      }
+      document.getElementById('rating-distribution').innerHTML = ratingHtml;
+      
+      // Géneros
+      const genres = {};
+      albums.forEach(a => {
+        if (a.genre) genres[a.genre] = (genres[a.genre] || 0) + 1;
+      });
+      const sortedGenres = Object.entries(genres).sort((a,b) => b[1] - a[1]);
+      let genreHtml = '';
+      sortedGenres.forEach(([genre, count]) => {
+        const percentage = (count / albums.length) * 100;
+        genreHtml += `
+          <div class="flex items-center gap-12 mb-8">
+            <div style="width:120px;">${genre}</div>
+            <div class="progress-bar" style="flex:1;"><div class="progress-fill" style="width:${percentage}%;"></div></div>
+            <div style="width:60px; text-align:right;" class="text-muted">${count}</div>
+          </div>
+        `;
+      });
+      document.getElementById('genres-container').innerHTML = genreHtml || '<div class="text-muted">No hay datos de géneros</div>';
+      
+      // Décadas
+      const decades = {};
+      albums.forEach(a => {
+        if (a.year) {
+          const decade = Math.floor(a.year / 10) * 10;
+          decades[decade] = (decades[decade] || 0) + 1;
+        }
+      });
+      const sortedDecades = Object.entries(decades).sort((a,b) => b[0] - a[0]);
+      let decadeHtml = '';
+      sortedDecades.forEach(([decade, count]) => {
+        const percentage = (count / albums.length) * 100;
+        decadeHtml += `
+          <div class="flex items-center gap-12 mb-8">
+            <div style="width:80px;">${decade}s</div>
+            <div class="progress-bar" style="flex:1;"><div class="progress-fill" style="width:${percentage}%;"></div></div>
+            <div style="width:60px; text-align:right;" class="text-muted">${count}</div>
+          </div>
+        `;
+      });
+      document.getElementById('decades-container').innerHTML = decadeHtml || '<div class="text-muted">No hay datos de años</div>';
+      
+      // Actividad mensual
+      const monthly = {};
+      albums.forEach(a => {
+        if (a.listenDate) {
+          const month = a.listenDate.substring(0, 7);
+          monthly[month] = (monthly[month] || 0) + 1;
+        }
+      });
+      const months = Object.keys(monthly).sort();
+      const monthNames = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
+      let activityHtml = '<div class="flex gap-16 wrap" style="justify-content:center;">';
+      months.forEach(month => {
+        const [year, m] = month.split('-');
+        activityHtml += `
+          <div style="text-align:center; min-width:60px;">
+            <div style="font-size:28px; font-weight:600;">${monthly[month]}</div>
+            <div class="text-xs text-muted">${monthNames[parseInt(m)-1]} ${year}</div>
+          </div>
+        `;
+      });
+      activityHtml += '</div>';
+      document.getElementById('monthly-activity').innerHTML = activityHtml || '<div class="text-muted">No hay datos mensuales</div>';
+    }
+    
+    // Asegurar que loadStatsPage esté disponible
+    window.loadStatsPage = loadStatsPage;
+  </script>
+</body>
+</html>
