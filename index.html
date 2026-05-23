@@ -9,303 +9,158 @@
 </head>
 <body>
 
-  <!-- ==============================
-       NAVBAR
-  =============================== -->
   <nav class="navbar">
     <div class="container">
       <div class="navbar__inner">
-
-        <a href="/albumbyalbum/" class="navbar__logo display">
-          Sound<span>log</span>
-        </a>
-
+        <a href="/albumbyalbum/" class="navbar__logo display">Sound<span>log</span></a>
         <nav class="navbar__nav">
           <a href="/albumbyalbum/" class="navbar__link active"><i class="ti ti-home"></i> Feed</a>
           <a href="/albumbyalbum/pages/explorar.html" class="navbar__link"><i class="ti ti-compass"></i> Explorar</a>
           <a href="/albumbyalbum/pages/foros.html" class="navbar__link"><i class="ti ti-message-circle"></i> Foros</a>
           <a href="/albumbyalbum/pages/stats.html" class="navbar__link"><i class="ti ti-chart-bar"></i> Stats</a>
         </nav>
-
         <div class="navbar__search">
-          <i class="ti ti-search" style="flex-shrink:0;"></i>
-          <input type="text" placeholder="Buscar álbumes, artistas..." />
+          <i class="ti ti-search"></i>
+          <input type="text" placeholder="Buscar..." />
         </div>
-
         <div class="navbar__right">
-          <button class="btn--ghost btn" title="Notificaciones">
-            <i class="ti ti-bell" style="font-size:18px;"></i>
-          </button>
-          <a href="/albumbyalbum/pages/perfil.html" class="avatar avatar--md avatar--purple" title="Mi perfil">JM</a>
-          <button class="btn--ghost btn" onclick="logout()" title="Cerrar sesión">
-            <i class="ti ti-logout" style="font-size:18px;"></i>
-          </button>
+          <a href="/albumbyalbum/pages/perfil.html" class="avatar avatar--md avatar--purple user-avatar">JM</a>
+          <button class="btn--ghost btn" onclick="logout()"><i class="ti ti-logout"></i></button>
         </div>
-
       </div>
     </div>
   </nav>
 
-  <!-- ==============================
-       MAIN CONTENT
-  =============================== -->
   <main class="container">
     <div class="page-grid">
-
-      <!-- ===== SIDEBAR IZQUIERDA ===== -->
+      
+      <!-- SIDEBAR IZQUIERDO -->
       <aside>
-
         <!-- Perfil rápido -->
         <div class="card mb-16">
           <div class="flex items-center gap-10 mb-12">
             <a href="/albumbyalbum/pages/perfil.html" class="avatar avatar--lg avatar--purple user-avatar">JM</a>
             <div>
-              <div class="text-sm font-medium username-display" style="font-weight:500;">juan_music</div>
-              <div class="text-sm text-muted"><span class="album-count">342</span> álbumes · <span class="review-count">58</span> reseñas</div>
+              <div class="text-sm font-medium username-display" style="font-weight:500;">Cargando...</div>
+              <div class="text-sm text-muted"><span class="album-count">0</span> álbumes · <span class="review-count">0</span> reseñas</div>
             </div>
           </div>
+          <button class="btn btn--primary btn--sm w-100" onclick="openAddAlbumModal()" style="width:100%;">
+            <i class="ti ti-plus"></i> Agregar álbum
+          </button>
+        </div>
+
+        <!-- Estadísticas rápidas -->
+        <div class="card mb-16">
+          <div class="section-label">Estadísticas</div>
           <div class="grid-2">
             <div class="stat-mini">
-              <div class="stat-mini__num album-count">342</div>
+              <div class="stat-mini__num album-count">0</div>
               <div class="stat-mini__label">Álbumes</div>
             </div>
             <div class="stat-mini">
-              <div class="stat-mini__num">127</div>
-              <div class="stat-mini__label">Siguiendo</div>
+              <div class="stat-mini__num review-count">0</div>
+              <div class="stat-mini__label">Reseñas</div>
             </div>
           </div>
         </div>
 
-        <!-- Géneros de la semana -->
+        <!-- Géneros de la semana (demo) -->
         <div class="card mb-16">
           <div class="section-label">Géneros · esta semana</div>
           <div class="genre-row">
-            <div class="genre-row__header">
-              <span class="text-sm">Rock alternativo</span>
-              <span class="text-sm" style="color:var(--accent-light);">42%</span>
-            </div>
+            <div class="genre-row__header"><span>Rock alternativo</span><span style="color:var(--accent-light);">42%</span></div>
             <div class="genre-row__bar"><div class="genre-row__fill" style="width:42%;"></div></div>
           </div>
           <div class="genre-row">
-            <div class="genre-row__header">
-              <span class="text-sm">Jazz</span>
-              <span class="text-sm" style="color:var(--accent-light);">28%</span>
-            </div>
+            <div class="genre-row__header"><span>Jazz</span><span style="color:var(--accent-light);">28%</span></div>
             <div class="genre-row__bar"><div class="genre-row__fill" style="width:28%;"></div></div>
           </div>
           <div class="genre-row">
-            <div class="genre-row__header">
-              <span class="text-sm">Post-rock</span>
-              <span class="text-sm" style="color:var(--accent-light);">18%</span>
-            </div>
+            <div class="genre-row__header"><span>Post-rock</span><span style="color:var(--accent-light);">18%</span></div>
             <div class="genre-row__bar"><div class="genre-row__fill" style="width:18%;"></div></div>
           </div>
-          <div class="genre-row">
-            <div class="genre-row__header">
-              <span class="text-sm">Electrónica</span>
-              <span class="text-sm" style="color:var(--accent-light);">12%</span>
-            </div>
-            <div class="genre-row__bar"><div class="genre-row__fill" style="width:12%;"></div></div>
-          </div>
-          <a href="/albumbyalbum/pages/stats.html" class="text-xs text-accent" style="display:block; margin-top:10px;">
-            Ver todas mis estadísticas →
-          </a>
         </div>
 
-        <!-- Navegación adicional -->
+        <!-- Mis listas (dinámico) -->
         <div class="card">
           <div class="section-label">Mis listas</div>
           <ul>
             <li style="padding:6px 0; border-bottom:1px solid var(--border);">
-              <a href="#" class="flex items-center gap-8 text-sm" style="color:var(--text-secondary);">
+              <a href="/albumbyalbum/pages/perfil.html" class="flex items-center gap-8 text-sm" style="color:var(--text-secondary);">
                 <i class="ti ti-check" style="color:var(--green);"></i> Álbumes escuchados
-                <span class="text-hint" style="margin-left:auto;">342</span>
+                <span class="text-hint" style="margin-left:auto;" id="sidebar-album-count">0</span>
               </a>
             </li>
             <li style="padding:6px 0; border-bottom:1px solid var(--border);">
               <a href="#" class="flex items-center gap-8 text-sm" style="color:var(--text-secondary);">
                 <i class="ti ti-bookmark" style="color:var(--accent-light);"></i> Quiero escuchar
-                <span class="text-hint" style="margin-left:auto;">89</span>
+                <span class="text-hint" style="margin-left:auto;">0</span>
               </a>
             </li>
             <li style="padding:6px 0;">
               <a href="#" class="flex items-center gap-8 text-sm" style="color:var(--text-secondary);">
                 <i class="ti ti-list" style="color:#ff9070;"></i> Mis listas
-                <span class="text-hint" style="margin-left:auto;">7</span>
+                <span class="text-hint" style="margin-left:auto;">0</span>
               </a>
             </li>
           </ul>
         </div>
-
       </aside>
 
-      <!-- ===== FEED CENTRAL ===== -->
+      <!-- FEED CENTRAL -->
       <section>
-
-        <!-- Tabs y botón de reseña -->
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
-          <div class="feed-tabs" style="margin-bottom: 0; flex: 1; margin-right: 12px;">
-            <button class="feed-tab active" onclick="switchTab(this)">Amigos</button>
-            <button class="feed-tab" onclick="switchTab(this)">Global</button>
-            <button class="feed-tab" onclick="switchTab(this)">Popular</button>
+        <div style="display: flex; gap: 12px; margin-bottom: 16px;">
+          <div class="feed-tabs" style="flex:1;">
+            <button class="feed-tab active" onclick="switchTab(this)">Global</button>
           </div>
-          <button class="btn btn--primary btn--sm" onclick="openAddReviewModal()">
-            <i class="ti ti-plus"></i> Reseñar
-          </button>
+          <button class="btn btn--primary btn--sm" onclick="openAddAlbumModal()"><i class="ti ti-plus"></i> Nuevo</button>
         </div>
-
-        <!-- Destacado foro activo -->
-        <div class="forum-highlight mb-12">
-          <i class="ti ti-flame" style="font-size:20px; color:var(--accent-light); flex-shrink:0;"></i>
-          <div style="flex:1; min-width:0;">
-            <div style="font-size:0.85rem; font-weight:500; margin-bottom:2px;">¿El mejor álbum de rock de los 90s?</div>
-            <div class="text-xs text-muted">47 respuestas · Muy activo ahora</div>
-          </div>
-          <a href="/albumbyalbum/pages/foros.html" class="btn btn--secondary btn--xs">Ver foro</a>
-        </div>
-
-        <!-- Feed container (dinámico) -->
         <div class="card" id="feed-container"></div>
-
       </section>
 
-      <!-- ===== SIDEBAR DERECHA ===== -->
+      <!-- SIDEBAR DERECHO -->
       <aside>
-
-        <!-- Activo ahora -->
         <div class="card mb-16">
-          <div class="section-label"><span class="dot-live"></span> Activo ahora</div>
-          <div class="sidebar-item">
-            <div class="avatar avatar--sm avatar--coral">AM</div>
-            <div class="sidebar-item__info">
-              <div class="sidebar-item__name">ana_melodies</div>
-              <div class="sidebar-item__sub">Kid A · Radiohead</div>
-            </div>
-          </div>
-          <div class="sidebar-item">
-            <div class="avatar avatar--sm avatar--teal">CR</div>
-            <div class="sidebar-item__info">
-              <div class="sidebar-item__name">carlos_rock</div>
-              <div class="sidebar-item__sub">Kind of Blue · Miles Davis</div>
-            </div>
-          </div>
-          <div class="sidebar-item">
-            <div class="avatar avatar--sm avatar--pink">VP</div>
-            <div class="sidebar-item__info">
-              <div class="sidebar-item__name">valeria_pop</div>
-              <div class="sidebar-item__sub">Blonde · Frank Ocean</div>
-            </div>
-          </div>
+          <div class="section-label">🎯 Tips</div>
+          <p class="text-sm text-muted">Agrega álbumes que has escuchado, califícalos y comparte tus reseñas.</p>
         </div>
-
-        <!-- Álbum del día -->
-        <div class="card mb-16">
-          <div class="section-label">Álbum del día</div>
-          <div class="album-day">
-            <div class="album-day__cover">🏔️</div>
-            <div class="album-day__title">Lift Your Skinny Fists</div>
-            <div class="album-day__artist">Godspeed You! Black Emperor</div>
-            <div class="stars" style="justify-content:center;">
-              <span class="star">★</span><span class="star">★</span><span class="star">★</span>
-              <span class="star">★</span><span class="star">★</span>
-            </div>
-          </div>
-          <button class="btn btn--secondary btn--sm" style="width:100%; justify-content:center;" onclick="openAddReviewModal()">
-            Reseñar este álbum
-          </button>
-        </div>
-
-        <!-- Foros populares -->
         <div class="card">
-          <div class="section-label">Foros populares</div>
-          <div class="sidebar-item">
-            <span style="font-size:18px;">🎸</span>
-            <div class="sidebar-item__info">
-              <div class="sidebar-item__name">Rock alternativo</div>
-              <div class="sidebar-item__sub">1.2k miembros</div>
-            </div>
+          <div class="section-label">📊 Tu progreso</div>
+          <div class="text-center p-12">
+            <div style="font-size:36px;" class="album-count">0</div>
+            <div class="text-sm text-muted">álbumes registrados</div>
           </div>
-          <div class="sidebar-item">
-            <span style="font-size:18px;">🎷</span>
-            <div class="sidebar-item__info">
-              <div class="sidebar-item__name">Jazz &amp; Soul</div>
-              <div class="sidebar-item__sub">876 miembros</div>
-            </div>
-          </div>
-          <div class="sidebar-item">
-            <span style="font-size:18px;">🌊</span>
-            <div class="sidebar-item__info">
-              <div class="sidebar-item__name">Indie &amp; Post-rock</div>
-              <div class="sidebar-item__sub">654 miembros</div>
-            </div>
-          </div>
-          <div class="sidebar-item">
-            <span style="font-size:18px;">🎹</span>
-            <div class="sidebar-item__info">
-              <div class="sidebar-item__name">Música clásica</div>
-              <div class="sidebar-item__sub">412 miembros</div>
-            </div>
-          </div>
-          <a href="/albumbyalbum/pages/foros.html" class="text-xs text-accent" style="display:block; margin-top:10px;">
-            Ver todos los foros →
-          </a>
         </div>
-
-        <!-- Conectar Spotify -->
-        <div class="card mt-16">
-          <div class="section-label">Conectar servicios</div>
-          <button class="btn btn--green btn--sm" style="width:100%; justify-content:center;" onclick="connectSpotify()">
-            <i class="ti ti-brand-spotify"></i> Conectar Spotify
-          </button>
-          <p class="text-xs text-muted mt-8" style="text-align:center;">Sincroniza tu música y obtén estadísticas reales</p>
-        </div>
-
       </aside>
 
     </div>
   </main>
 
-  <!-- MODAL: Agregar reseña -->
-  <div id="addReviewModal" class="modal">
+  <!-- MODAL AGREGAR ÁLBUM -->
+  <div id="addAlbumModal" class="modal">
     <div class="modal__content">
       <div class="modal__header">
-        <h3>Reseñar álbum</h3>
-        <span class="modal__close" onclick="closeModal('addReviewModal')">&times;</span>
+        <h3>Registrar álbum escuchado</h3>
+        <span class="modal__close" onclick="closeModal('addAlbumModal')">&times;</span>
       </div>
       <div class="modal__body">
-        <div class="form-group">
-          <label>Álbum</label>
-          <input type="text" id="reviewAlbumTitle" placeholder="Ej: In Rainbows">
-        </div>
-        <div class="form-group">
-          <label>Artista/Banda</label>
-          <input type="text" id="reviewArtist" placeholder="Ej: Radiohead">
-        </div>
-        <div class="form-group">
-          <label>Calificación</label>
-          <div class="rating-input">
-            <span class="rating-star">★</span>
-            <span class="rating-star">★</span>
-            <span class="rating-star">★</span>
-            <span class="rating-star">★</span>
-            <span class="rating-star">★</span>
-          </div>
-        </div>
-        <div class="form-group">
-          <label>Reseña (opcional)</label>
-          <textarea id="reviewText" placeholder="Escribe tu opinión..."></textarea>
-        </div>
+        <div class="form-group"><label>Álbum *</label><input type="text" id="albumTitle" placeholder="Ej: In Rainbows"></div>
+        <div class="form-group"><label>Artista *</label><input type="text" id="albumArtist" placeholder="Ej: Radiohead"></div>
+        <div class="form-group"><label>Año</label><input type="number" id="albumYear" placeholder="2007"></div>
+        <div class="form-group"><label>Género</label><input type="text" id="albumGenre" placeholder="Rock alternativo"></div>
+        <div class="form-group"><label>Calificación</label><select id="albumRating"><option value="5">★★★★★ (5)</option><option value="4">★★★★☆ (4)</option><option value="3">★★★☆☆ (3)</option><option value="2">★★☆☆☆ (2)</option><option value="1">★☆☆☆☆ (1)</option></select></div>
+        <div class="form-group"><label>Fecha que lo escuchaste</label><input type="date" id="listenDate"></div>
+        <div class="form-group"><label>Reseña (opcional)</label><textarea id="albumReview" rows="3" placeholder="¿Qué te pareció?"></textarea></div>
       </div>
       <div class="modal__footer">
-        <button class="btn btn--secondary" onclick="closeModal('addReviewModal')">Cancelar</button>
-        <button class="btn btn--primary" onclick="submitReview()">Publicar reseña</button>
+        <button class="btn btn--secondary" onclick="closeModal('addAlbumModal')">Cancelar</button>
+        <button class="btn btn--primary" onclick="submitAlbum()">Guardar</button>
       </div>
     </div>
   </div>
 
-  <!-- Toast notifications -->
   <div class="toast"></div>
-
   <script src="/albumbyalbum/js/main.js"></script>
 </body>
 </html>
