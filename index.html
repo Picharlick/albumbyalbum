@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Soundlog — Feed</title>
   <link rel="stylesheet" href="/albumbyalbum/css/styles.css" />
-  <!-- Tabler icons -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.9.0/dist/tabler-icons.min.css" />
 </head>
 <body>
@@ -22,10 +21,10 @@
         </a>
 
         <nav class="navbar__nav">
-          <a href="/albumbyalbum/"   class="navbar__link active"><i class="ti ti-home"></i> Feed</a>
+          <a href="/albumbyalbum/" class="navbar__link active"><i class="ti ti-home"></i> Feed</a>
           <a href="/albumbyalbum/pages/explorar.html" class="navbar__link"><i class="ti ti-compass"></i> Explorar</a>
-          <a href="/albumbyalbum/pages/foros.html"   class="navbar__link"><i class="ti ti-message-circle"></i> Foros</a>
-          <a href="/albumbyalbum/pages/stats.html"   class="navbar__link"><i class="ti ti-chart-bar"></i> Stats</a>
+          <a href="/albumbyalbum/pages/foros.html" class="navbar__link"><i class="ti ti-message-circle"></i> Foros</a>
+          <a href="/albumbyalbum/pages/stats.html" class="navbar__link"><i class="ti ti-chart-bar"></i> Stats</a>
         </nav>
 
         <div class="navbar__search">
@@ -38,6 +37,9 @@
             <i class="ti ti-bell" style="font-size:18px;"></i>
           </button>
           <a href="/albumbyalbum/pages/perfil.html" class="avatar avatar--md avatar--purple" title="Mi perfil">JM</a>
+          <button class="btn--ghost btn" onclick="logout()" title="Cerrar sesión">
+            <i class="ti ti-logout" style="font-size:18px;"></i>
+          </button>
         </div>
 
       </div>
@@ -53,30 +55,18 @@
       <!-- ===== SIDEBAR IZQUIERDA ===== -->
       <aside>
 
-        <!-- Now Playing -->
-        <div class="now-playing">
-          <div class="now-playing__dot"></div>
-          <div class="now-playing__info">
-            <div class="now-playing__label">
-              <i class="ti ti-brand-spotify"></i> Escuchando ahora
-            </div>
-            <div class="now-playing__track">Paranoid Android</div>
-            <div class="now-playing__artist">Radiohead · OK Computer</div>
-          </div>
-        </div>
-
         <!-- Perfil rápido -->
         <div class="card mb-16">
           <div class="flex items-center gap-10 mb-12">
-            <a href="/albumbyalbum/pages/perfil.html" class="avatar avatar--lg avatar--purple">JM</a>
+            <a href="/albumbyalbum/pages/perfil.html" class="avatar avatar--lg avatar--purple user-avatar">JM</a>
             <div>
-              <div style="font-size:0.9rem; font-weight:500;">juan_music</div>
-              <div class="text-sm text-muted">342 álbumes · 58 reseñas</div>
+              <div class="text-sm font-medium username-display" style="font-weight:500;">juan_music</div>
+              <div class="text-sm text-muted"><span class="album-count">342</span> álbumes · <span class="review-count">58</span> reseñas</div>
             </div>
           </div>
           <div class="grid-2">
             <div class="stat-mini">
-              <div class="stat-mini__num">342</div>
+              <div class="stat-mini__num album-count">342</div>
               <div class="stat-mini__label">Álbumes</div>
             </div>
             <div class="stat-mini">
@@ -152,11 +142,16 @@
       <!-- ===== FEED CENTRAL ===== -->
       <section>
 
-        <!-- Tabs -->
-        <div class="feed-tabs">
-          <button class="feed-tab active" onclick="switchTab(this)">Amigos</button>
-          <button class="feed-tab"        onclick="switchTab(this)">Global</button>
-          <button class="feed-tab"        onclick="switchTab(this)">Popular</button>
+        <!-- Tabs y botón de reseña -->
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+          <div class="feed-tabs" style="margin-bottom: 0; flex: 1; margin-right: 12px;">
+            <button class="feed-tab active" onclick="switchTab(this)">Amigos</button>
+            <button class="feed-tab" onclick="switchTab(this)">Global</button>
+            <button class="feed-tab" onclick="switchTab(this)">Popular</button>
+          </div>
+          <button class="btn btn--primary btn--sm" onclick="openAddReviewModal()">
+            <i class="ti ti-plus"></i> Reseñar
+          </button>
         </div>
 
         <!-- Destacado foro activo -->
@@ -169,109 +164,8 @@
           <a href="/albumbyalbum/pages/foros.html" class="btn btn--secondary btn--xs">Ver foro</a>
         </div>
 
-        <!-- Tarjetas de actividad -->
-        <div class="card">
-
-          <!-- Review completa -->
-          <div class="review">
-            <div class="review__header">
-              <a href="/albumbyalbum/pages/perfil.html" class="avatar avatar--md avatar--coral">AM</a>
-              <div class="review__meta">
-                <div class="review__who">
-                  <strong>ana_melodies</strong>
-                  <span class="text-muted">escuchó y reseñó</span>
-                  <strong>In Rainbows</strong>
-                  <span class="badge badge--accent">Radiohead</span>
-                </div>
-                <div class="flex items-center gap-8">
-                  <div class="stars">
-                    <span class="star">★</span><span class="star">★</span>
-                    <span class="star">★</span><span class="star">★</span><span class="star">★</span>
-                  </div>
-                  <span class="text-xs text-hint">Hace 2 horas</span>
-                </div>
-              </div>
-              <div class="review__album-thumb">🌊</div>
-            </div>
-            <div class="review__text">
-              Una obra maestra atemporal. "Reckoner" y "House of Cards" siguen siendo dos de las
-              canciones más emotivas que he escuchado. Radiohead en su momento más vulnerable y más brillante.
-            </div>
-            <div class="review__actions">
-              <button class="review__action" onclick="toggleLike(this)">
-                <i class="ti ti-heart"></i> <span>24</span>
-              </button>
-              <button class="review__action">
-                <i class="ti ti-message-circle"></i> 5 comentarios
-              </button>
-              <button class="review__action">
-                <i class="ti ti-bookmark"></i> Guardar
-              </button>
-            </div>
-          </div>
-
-          <!-- Lista compartida -->
-          <div class="review">
-            <div class="review__header">
-              <a href="#" class="avatar avatar--md avatar--teal">CR</a>
-              <div class="review__meta">
-                <div class="review__who">
-                  <strong>carlos_rock</strong>
-                  <span class="text-muted">creó una lista</span>
-                  <strong>"Álbumes de los 2000s que me marcaron"</strong>
-                </div>
-                <span class="text-xs text-hint">Hace 4 horas</span>
-              </div>
-            </div>
-            <div class="flex gap-6 wrap mb-8">
-              <span class="badge badge--muted">🎸 Is This It</span>
-              <span class="badge badge--muted">🌙 Turn On the Bright Lights</span>
-              <span class="badge badge--muted">🔮 Elephant</span>
-              <span class="badge badge--muted">+3 más</span>
-            </div>
-            <div class="review__actions">
-              <button class="review__action">
-                <i class="ti ti-heart"></i> 11
-              </button>
-              <button class="review__action">
-                <i class="ti ti-eye"></i> Ver lista completa
-              </button>
-            </div>
-          </div>
-
-          <!-- Calificación sin reseña -->
-          <div class="review">
-            <div class="review__header">
-              <a href="#" class="avatar avatar--md avatar--pink">VP</a>
-              <div class="review__meta">
-                <div class="review__who">
-                  <strong>valeria_pop</strong>
-                  <span class="text-muted">calificó</span>
-                  <strong>Blonde</strong>
-                  <span class="badge badge--accent">Frank Ocean</span>
-                </div>
-                <div class="flex items-center gap-8">
-                  <div class="stars">
-                    <span class="star">★</span><span class="star">★</span>
-                    <span class="star">★</span><span class="star">★</span>
-                    <span class="star--empty star">★</span>
-                  </div>
-                  <span class="text-xs text-hint">Hace 5 horas</span>
-                </div>
-              </div>
-              <div class="review__album-thumb">🌿</div>
-            </div>
-            <div class="review__actions">
-              <button class="review__action">
-                <i class="ti ti-heart"></i> 8
-              </button>
-              <button class="review__action">
-                <i class="ti ti-message-circle"></i> Comentar
-              </button>
-            </div>
-          </div>
-
-        </div><!-- /card feed -->
+        <!-- Feed container (dinámico) -->
+        <div class="card" id="feed-container"></div>
 
       </section>
 
@@ -282,24 +176,24 @@
         <div class="card mb-16">
           <div class="section-label"><span class="dot-live"></span> Activo ahora</div>
           <div class="sidebar-item">
-            <div class="avatar avatar--sm avatar--purple">AM</div>
+            <div class="avatar avatar--sm avatar--coral">AM</div>
             <div class="sidebar-item__info">
               <div class="sidebar-item__name">ana_melodies</div>
               <div class="sidebar-item__sub">Kid A · Radiohead</div>
             </div>
           </div>
           <div class="sidebar-item">
-            <div class="avatar avatar--sm avatar--coral">CR</div>
+            <div class="avatar avatar--sm avatar--teal">CR</div>
             <div class="sidebar-item__info">
               <div class="sidebar-item__name">carlos_rock</div>
               <div class="sidebar-item__sub">Kind of Blue · Miles Davis</div>
             </div>
           </div>
           <div class="sidebar-item">
-            <div class="avatar avatar--sm avatar--teal">MF</div>
+            <div class="avatar avatar--sm avatar--pink">VP</div>
             <div class="sidebar-item__info">
-              <div class="sidebar-item__name">marta_folk</div>
-              <div class="sidebar-item__sub">Blue · Joni Mitchell</div>
+              <div class="sidebar-item__name">valeria_pop</div>
+              <div class="sidebar-item__sub">Blonde · Frank Ocean</div>
             </div>
           </div>
         </div>
@@ -316,9 +210,9 @@
               <span class="star">★</span><span class="star">★</span>
             </div>
           </div>
-          <a href="/albumbyalbum/pages/album.html" class="btn btn--secondary btn--sm" style="width:100%; justify-content:center;">
-            Ver reseñas de la comunidad
-          </a>
+          <button class="btn btn--secondary btn--sm" style="width:100%; justify-content:center;" onclick="openAddReviewModal()">
+            Reseñar este álbum
+          </button>
         </div>
 
         <!-- Foros populares -->
@@ -357,10 +251,60 @@
           </a>
         </div>
 
+        <!-- Conectar Spotify -->
+        <div class="card mt-16">
+          <div class="section-label">Conectar servicios</div>
+          <button class="btn btn--green btn--sm" style="width:100%; justify-content:center;" onclick="connectSpotify()">
+            <i class="ti ti-brand-spotify"></i> Conectar Spotify
+          </button>
+          <p class="text-xs text-muted mt-8" style="text-align:center;">Sincroniza tu música y obtén estadísticas reales</p>
+        </div>
+
       </aside>
 
-    </div><!-- /page-grid -->
+    </div>
   </main>
+
+  <!-- MODAL: Agregar reseña -->
+  <div id="addReviewModal" class="modal">
+    <div class="modal__content">
+      <div class="modal__header">
+        <h3>Reseñar álbum</h3>
+        <span class="modal__close" onclick="closeModal('addReviewModal')">&times;</span>
+      </div>
+      <div class="modal__body">
+        <div class="form-group">
+          <label>Álbum</label>
+          <input type="text" id="reviewAlbumTitle" placeholder="Ej: In Rainbows">
+        </div>
+        <div class="form-group">
+          <label>Artista/Banda</label>
+          <input type="text" id="reviewArtist" placeholder="Ej: Radiohead">
+        </div>
+        <div class="form-group">
+          <label>Calificación</label>
+          <div class="rating-input">
+            <span class="rating-star">★</span>
+            <span class="rating-star">★</span>
+            <span class="rating-star">★</span>
+            <span class="rating-star">★</span>
+            <span class="rating-star">★</span>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Reseña (opcional)</label>
+          <textarea id="reviewText" placeholder="Escribe tu opinión..."></textarea>
+        </div>
+      </div>
+      <div class="modal__footer">
+        <button class="btn btn--secondary" onclick="closeModal('addReviewModal')">Cancelar</button>
+        <button class="btn btn--primary" onclick="submitReview()">Publicar reseña</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast notifications -->
+  <div class="toast"></div>
 
   <script src="/albumbyalbum/js/main.js"></script>
 </body>
