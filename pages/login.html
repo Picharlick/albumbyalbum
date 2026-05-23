@@ -70,15 +70,15 @@
       
       <div id="register-form" style="display: none;">
         <div class="form-group">
-          <label>Usuario</label>
+          <label>Usuario *</label>
           <input type="text" id="register-username" placeholder="mi_usuario">
         </div>
         <div class="form-group">
-          <label>Email</label>
+          <label>Email *</label>
           <input type="email" id="register-email" placeholder="usuario@ejemplo.com">
         </div>
         <div class="form-group">
-          <label>Contraseña</label>
+          <label>Contraseña *</label>
           <input type="password" id="register-password" placeholder="••••••••">
         </div>
         <div class="form-group">
@@ -86,7 +86,7 @@
           <input type="password" id="register-confirm" placeholder="••••••••">
         </div>
         <div class="form-group">
-          <label>¿Cómo te llamas?</label>
+          <label>¿Cómo te llamas? (opcional)</label>
           <input type="text" id="register-name" placeholder="Tu nombre">
         </div>
         <button class="btn btn--primary btn-full" onclick="handleRegister()">
@@ -109,6 +109,11 @@
     };
 
     let isLoginMode = true;
+
+    // No crear ningún usuario demo automáticamente
+    if (!localStorage.getItem(STORAGE_KEYS.USERS)) {
+      localStorage.setItem(STORAGE_KEYS.USERS, JSON.stringify({}));
+    }
 
     function toggleAuthMode() {
       isLoginMode = !isLoginMode;
@@ -155,13 +160,14 @@
       const users = JSON.parse(localStorage.getItem(STORAGE_KEYS.USERS) || '{}');
       
       if (users[username]) {
+        // No verificamos contraseña en esta demo, solo usuario
         localStorage.setItem(STORAGE_KEYS.CURRENT_USER, JSON.stringify(users[username]));
         showToast('¡Bienvenido!', 'success');
         setTimeout(() => {
           window.location.href = '/albumbyalbum/';
         }, 500);
       } else {
-        showToast('Usuario no encontrado', 'error');
+        showToast('Usuario no encontrado. ¿Quieres registrarte?', 'error');
       }
     }
 
@@ -173,7 +179,7 @@
       const name = document.getElementById('register-name').value.trim();
       
       if (!username || !email || !password) {
-        showToast('Completa todos los campos', 'error');
+        showToast('Completa los campos obligatorios (*)', 'error');
         return;
       }
       
@@ -190,16 +196,17 @@
       const users = JSON.parse(localStorage.getItem(STORAGE_KEYS.USERS) || '{}');
       
       if (users[username]) {
-        showToast('Ese usuario ya existe', 'error');
+        showToast('Ese usuario ya existe. Elige otro', 'error');
         return;
       }
       
+      // Crear nuevo usuario con datos VACÍOS
       const newUser = {
         id: 'user_' + Date.now(),
         username: username,
         displayName: name || username,
         email: email,
-        bio: 'Amante de la música',
+        bio: '',
         avatar: username.substring(0, 2).toUpperCase(),
         avatarColor: ['purple', 'coral', 'teal', 'pink'][Math.floor(Math.random() * 4)],
         joinedAt: new Date().toISOString(),
@@ -211,13 +218,13 @@
       localStorage.setItem(STORAGE_KEYS.USERS, JSON.stringify(users));
       localStorage.setItem(STORAGE_KEYS.CURRENT_USER, JSON.stringify(newUser));
       
-      showToast('¡Registro exitoso!', 'success');
+      showToast('¡Cuenta creada exitosamente!', 'success');
       setTimeout(() => {
         window.location.href = '/albumbyalbum/';
       }, 500);
     }
 
-    // Verificar si ya hay sesión activa
+    // Si ya hay sesión, redirigir al feed
     const savedUser = localStorage.getItem(STORAGE_KEYS.CURRENT_USER);
     if (savedUser && !window.location.pathname.includes('login.html')) {
       window.location.href = '/albumbyalbum/';
