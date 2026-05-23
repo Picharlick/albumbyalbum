@@ -6,6 +6,8 @@
   <title>Soundlog — Iniciar sesión</title>
   <link rel="stylesheet" href="../css/styles.css">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.9.0/dist/tabler-icons.min.css">
+  <!-- Supabase SDK -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
     .auth-container {
       min-height: 100vh;
@@ -37,15 +39,6 @@
     .btn-full { width: 100%; justify-content: center; }
     .auth-switch { text-align: center; margin-top: 24px; font-size: 0.85rem; color: #9b9aaa; }
     .auth-switch a { color: #a89cf9; cursor: pointer; }
-    .debug-info {
-      margin-top: 20px;
-      padding: 10px;
-      background: rgba(0,0,0,0.3);
-      border-radius: 8px;
-      font-size: 10px;
-      color: #666;
-      text-align: center;
-    }
   </style>
 </head>
 <body>
@@ -97,38 +90,21 @@
       <div class="auth-switch">
         <span id="switch-text">¿No tienes cuenta? <a onclick="toggleAuthMode()">Regístrate</a></span>
       </div>
-      
-      <!-- Info de depuración -->
-      <div class="debug-info" id="debugInfo">
-        👇 Datos de prueba
-      </div>
     </div>
   </div>
 
   <div class="toast"></div>
 
   <script>
-    const STORAGE_KEYS = {
-      USERS: 'soundlog_users',
-      CURRENT_USER: 'soundlog_current_user'
-    };
+    // === CONFIGURACIÓN DE SUPABASE ===
+    // ¡REEMPLAZA ESTOS VALORES CON LOS TUYOS!
+    const SUPABASE_URL = 'https://TU_PROYECTO.supabase.co';
+    const SUPABASE_ANON_KEY = 'TU_ANON_KEY';
+    
+    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    const STORAGE_KEYS = { CURRENT_USER: 'soundlog_current_user' };
 
     let isLoginMode = true;
-
-    // Inicializar
-    if (!localStorage.getItem(STORAGE_KEYS.USERS)) {
-      localStorage.setItem(STORAGE_KEYS.USERS, JSON.stringify({}));
-    }
-
-    // Mostrar información de depuración
-    function updateDebugInfo() {
-      const users = JSON.parse(localStorage.getItem(STORAGE_KEYS.USERS) || '{}');
-      const userCount = Object.keys(users).length;
-      const debugDiv = document.getElementById('debugInfo');
-      if (debugDiv) {
-        debugDiv.innerHTML = `📱 Almacenamiento local: ${userCount} usuario${userCount !== 1 ? 's' : ''} registrado${userCount !== 1 ? 's' : ''}<br>🔍 ¿Problemas? Regístrate con un usuario NUEVO`;
-      }
-    }
 
     function toggleAuthMode() {
       isLoginMode = !isLoginMode;
@@ -148,7 +124,6 @@
         title.textContent = 'Registrarse';
         switchText.innerHTML = '¿Ya tienes cuenta? <a onclick="toggleAuthMode()">Inicia sesión</a>';
       }
-      updateDebugInfo();
     }
 
     function showToast(message, type) {
@@ -164,34 +139,32 @@
       setTimeout(() => toast.classList.remove('show'), 3000);
     }
 
-    function handleLogin() {
+    async function handleLogin() {
       const username = document.getElementById('login-username').value.trim();
       const password = document.getElementById('login-password').value;
       
       if (!username) { showToast('Ingresa tu usuario', 'error'); return; }
       if (!password) { showToast('Ingresa tu contraseña', 'error'); return; }
       
-      const users = JSON.parse(localStorage.getItem(STORAGE_KEYS.USERS) || '{}');
-      const user = users[username];
+      const { data, error } = await supabase
+        .from('users')
+        .select('*')
+        .eq('username', username)
+        .eq('password', password)
+        .single();
       
-      console.log('Intentando login:', username);
-      console.log('Usuarios registrados:', Object.keys(users));
-      
-      if (user && user.password === password) {
-        const userWithoutPassword = { ...user };
+      if (error || !data) {
+        showToast('❌ Usuario o contraseña incorrectos', 'error');
+      } else {
+        const userWithoutPassword = { ...data };
         delete userWithoutPassword.password;
         localStorage.setItem(STORAGE_KEYS.CURRENT_USER, JSON.stringify(userWithoutPassword));
         showToast('¡Bienvenido!', 'success');
         setTimeout(() => { window.location.href = '../index.html'; }, 500);
-      } else if (user && user.password !== password) {
-        showToast('❌ Contraseña incorrecta', 'error');
-      } else {
-        showToast(`❌ Usuario "${username}" no encontrado. ¿Quieres registrarte?`, 'error');
       }
-      updateDebugInfo();
     }
 
-    function handleRegister() {
+    async function handleRegister() {
       const username = document.getElementById('register-username').value.trim();
       const email = document.getElementById('register-email').value.trim();
       const password = document.getElementById('register-password').value;
@@ -205,37 +178,40 @@
       if (password !== confirm) { showToast('Las contraseñas no coinciden', 'error'); return; }
       if (password.length < 4) { showToast('La contraseña debe tener al menos 4 caracteres', 'error'); return; }
       
-      const users = JSON.parse(localStorage.getItem(STORAGE_KEYS.USERS) || '{}');
-      if (users[username]) { showToast('Ese usuario ya existe. Elige otro', 'error'); return; }
+      // Verificar si el usuario ya existe
+      const { data: existing } = await supabase
+        .from('users')
+        .select('username')
+        .eq('username', username)
+        .single();
       
-      const newUser = {
-        id: 'user_' + Date.now(),
-        username: username,
-        password: password,
-        displayName: name || username,
-        email: email,
-        bio: '',
-        avatar: username.substring(0, 2).toUpperCase(),
-        avatarColor: ['purple', 'coral', 'teal', 'pink'][Math.floor(Math.random() * 4)],
-        joinedAt: new Date().toISOString(),
-        followingCount: 0,
-        followersCount: 0
-      };
+      if (existing) {
+        showToast('Ese usuario ya existe. Elige otro', 'error');
+        return;
+      }
       
-      users[username] = newUser;
-      localStorage.setItem(STORAGE_KEYS.USERS, JSON.stringify(users));
+      const { data, error } = await supabase
+        .from('users')
+        .insert([{
+          username: username,
+          email: email,
+          password: password,
+          display_name: name || username,
+          avatar: username.substring(0, 2).toUpperCase(),
+          avatar_color: ['purple', 'coral', 'teal', 'pink'][Math.floor(Math.random() * 4)]
+        }])
+        .select();
       
-      const userWithoutPassword = { ...newUser };
-      delete userWithoutPassword.password;
-      localStorage.setItem(STORAGE_KEYS.CURRENT_USER, JSON.stringify(userWithoutPassword));
-      
-      showToast('✅ ¡Cuenta creada exitosamente!', 'success');
-      setTimeout(() => { window.location.href = '../index.html'; }, 500);
-      updateDebugInfo();
+      if (error) {
+        showToast('Error al registrar: ' + error.message, 'error');
+      } else if (data && data[0]) {
+        const userWithoutPassword = { ...data[0] };
+        delete userWithoutPassword.password;
+        localStorage.setItem(STORAGE_KEYS.CURRENT_USER, JSON.stringify(userWithoutPassword));
+        showToast('✅ ¡Cuenta creada exitosamente!', 'success');
+        setTimeout(() => { window.location.href = '../index.html'; }, 500);
+      }
     }
-
-    // Ejecutar al cargar
-    updateDebugInfo();
   </script>
 </body>
 </html>
