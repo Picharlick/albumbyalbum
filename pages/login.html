@@ -6,7 +6,6 @@
   <title>Soundlog — Iniciar sesión</title>
   <link rel="stylesheet" href="../css/styles.css">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.9.0/dist/tabler-icons.min.css">
-  <!-- Supabase SDK -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
     .auth-container {
@@ -33,7 +32,7 @@
       margin-bottom: 24px;
       display: block;
       text-decoration: none;
-      color: var(--text-primary);
+      color: white;
     }
     .navbar__logo span { color: #a89cf9; }
     .btn-full { width: 100%; justify-content: center; }
@@ -50,7 +49,7 @@
       <div id="login-form">
         <div class="form-group">
           <label>Usuario</label>
-          <input type="text" id="login-username" placeholder="ej: juan_music" autocomplete="off">
+          <input type="text" id="login-username" placeholder="usuario" autocomplete="off">
         </div>
         <div class="form-group">
           <label>Contraseña</label>
@@ -78,10 +77,6 @@
           <label>Confirmar contraseña</label>
           <input type="password" id="register-confirm" placeholder="••••••••" autocomplete="off">
         </div>
-        <div class="form-group">
-          <label>¿Cómo te llamas? (opcional)</label>
-          <input type="text" id="register-name" placeholder="Tu nombre" autocomplete="off">
-        </div>
         <button class="btn btn--primary btn-full" onclick="handleRegister()">
           <i class="ti ti-user-plus"></i> Registrarse
         </button>
@@ -96,10 +91,11 @@
   <div class="toast"></div>
 
   <script>
-    // === CONFIGURACIÓN DE SUPABASE ===
-    // ¡REEMPLAZA ESTOS VALORES CON LOS TUYOS!
     const SUPABASE_URL = 'https://omwdajgpywdwrbiguvfl.supabase.co';
     const SUPABASE_ANON_KEY = 'sb_publishable_e4HpONc7gleaNaxEG6FTUQ_5t4JbdLa';
+    
+    console.log('🔵 Login page loaded');
+    console.log('Supabase URL:', SUPABASE_URL);
     
     const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
     const STORAGE_KEYS = { CURRENT_USER: 'soundlog_current_user' };
@@ -146,12 +142,16 @@
       if (!username) { showToast('Ingresa tu usuario', 'error'); return; }
       if (!password) { showToast('Ingresa tu contraseña', 'error'); return; }
       
+      console.log('Intentando login:', username);
+      
       const { data, error } = await supabase
         .from('users')
         .select('*')
         .eq('username', username)
         .eq('password', password)
         .single();
+      
+      console.log('Respuesta:', data, error);
       
       if (error || !data) {
         showToast('❌ Usuario o contraseña incorrectos', 'error');
@@ -169,7 +169,7 @@
       const email = document.getElementById('register-email').value.trim();
       const password = document.getElementById('register-password').value;
       const confirm = document.getElementById('register-confirm').value;
-      const name = document.getElementById('register-name').value.trim();
+      const name = document.getElementById('register-name')?.value.trim() || username;
       
       if (!username || !email || !password) {
         showToast('Completa los campos obligatorios (*)', 'error');
@@ -178,7 +178,8 @@
       if (password !== confirm) { showToast('Las contraseñas no coinciden', 'error'); return; }
       if (password.length < 4) { showToast('La contraseña debe tener al menos 4 caracteres', 'error'); return; }
       
-      // Verificar si el usuario ya existe
+      console.log('Intentando registrar:', username);
+      
       const { data: existing } = await supabase
         .from('users')
         .select('username')
@@ -196,11 +197,13 @@
           username: username,
           email: email,
           password: password,
-          display_name: name || username,
+          display_name: name,
           avatar: username.substring(0, 2).toUpperCase(),
           avatar_color: ['purple', 'coral', 'teal', 'pink'][Math.floor(Math.random() * 4)]
         }])
         .select();
+      
+      console.log('Resultado registro:', data, error);
       
       if (error) {
         showToast('Error al registrar: ' + error.message, 'error');
