@@ -37,7 +37,6 @@
       <p class="text-muted">Descubre álbumes populares en la comunidad</p>
     </div>
 
-    <!-- Filtros -->
     <div class="flex gap-8 mb-24 wrap">
       <button class="btn btn--secondary btn--sm active" onclick="filterExplore('all', this)">🎵 Todos</button>
       <button class="btn btn--secondary btn--sm" onclick="filterExplore('rock', this)">🎸 Rock</button>
@@ -47,20 +46,17 @@
       <button class="btn btn--secondary btn--sm" onclick="filterExplore('metal', this)">🤘 Metal</button>
     </div>
 
-    <!-- Resultados -->
     <div class="section-label">📀 ÁLBUMES POPULARES</div>
     <div id="explore-container" class="mb-24">
       <div class="empty-state"><i class="ti ti-compass"></i><p>Cargando...</p></div>
     </div>
 
-    <!-- Recomendaciones personalizadas -->
     <div class="section-label mt-24">🎯 RECOMENDADO PARA TI</div>
     <div id="recommendations-container-explore" class="mb-24">
       <div class="empty-state"><i class="ti ti-star"></i><p>Agrega más álbumes para recibir recomendaciones</p></div>
     </div>
   </main>
 
-  <!-- MODAL AGREGAR ÁLBUM -->
   <div id="addAlbumModal" class="modal">
     <div class="modal__content">
       <div class="modal__header">
@@ -111,6 +107,7 @@
   </div>
 
   <div class="toast"></div>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="/albumbyalbum/js/main.js"></script>
 
   <script>
