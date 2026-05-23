@@ -2,9 +2,9 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <title>Soundlog — Iniciar sesión</title>
-  <link rel="stylesheet" href="/albumbyalbum/css/styles.css">
+  <link rel="stylesheet" href="../css/styles.css">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.9.0/dist/tabler-icons.min.css">
   <style>
     .auth-container {
@@ -13,6 +13,7 @@
       align-items: center;
       justify-content: center;
       background: linear-gradient(135deg, #0d0d0f 0%, #0a0a0c 100%);
+      padding: 20px;
     }
     .auth-card {
       background: #1a1a1e;
@@ -22,11 +23,7 @@
       width: 100%;
       max-width: 420px;
     }
-    .auth-card h1 {
-      text-align: center;
-      margin-bottom: 32px;
-      font-size: 1.5rem;
-    }
+    .auth-card h1 { text-align: center; margin-bottom: 32px; font-size: 1.5rem; }
     .navbar__logo {
       font-family: 'Instrument Serif', serif;
       font-size: 2rem;
@@ -36,22 +33,14 @@
     }
     .navbar__logo span { color: #a89cf9; }
     .btn-full { width: 100%; justify-content: center; }
-    .auth-switch {
-      text-align: center;
-      margin-top: 24px;
-      font-size: 0.85rem;
-      color: #9b9aaa;
-    }
-    .auth-switch a {
-      color: #a89cf9;
-      cursor: pointer;
-    }
+    .auth-switch { text-align: center; margin-top: 24px; font-size: 0.85rem; color: #9b9aaa; }
+    .auth-switch a { color: #a89cf9; cursor: pointer; }
   </style>
 </head>
 <body>
   <div class="auth-container">
     <div class="auth-card">
-      <div class="navbar__logo">Sound<span>log</span></div>
+      <a href="../index.html" class="navbar__logo">Sound<span>log</span></a>
       <h1 id="auth-title">Iniciar sesión</h1>
       
       <div id="login-form">
@@ -110,7 +99,6 @@
 
     let isLoginMode = true;
 
-    // Inicializar usuarios vacíos si no existe
     if (!localStorage.getItem(STORAGE_KEYS.USERS)) {
       localStorage.setItem(STORAGE_KEYS.USERS, JSON.stringify({}));
     }
@@ -152,33 +140,22 @@
       const username = document.getElementById('login-username').value.trim();
       const password = document.getElementById('login-password').value;
       
-      if (!username) {
-        showToast('Ingresa tu usuario', 'error');
-        return;
-      }
-      
-      if (!password) {
-        showToast('Ingresa tu contraseña', 'error');
-        return;
-      }
+      if (!username) { showToast('Ingresa tu usuario', 'error'); return; }
+      if (!password) { showToast('Ingresa tu contraseña', 'error'); return; }
       
       const users = JSON.parse(localStorage.getItem(STORAGE_KEYS.USERS) || '{}');
       const user = users[username];
       
-      // Verificar que el usuario existe Y que la contraseña coincide
       if (user && user.password === password) {
-        // Guardar sesión sin la contraseña por seguridad
         const userWithoutPassword = { ...user };
         delete userWithoutPassword.password;
         localStorage.setItem(STORAGE_KEYS.CURRENT_USER, JSON.stringify(userWithoutPassword));
         showToast('¡Bienvenido!', 'success');
-        setTimeout(() => {
-          window.location.href = '/albumbyalbum/';
-        }, 500);
+        setTimeout(() => { window.location.href = '../index.html'; }, 500);
       } else if (user && user.password !== password) {
         showToast('❌ Contraseña incorrecta', 'error');
       } else {
-        showToast('❌ Usuario no encontrado. ¿Quieres registrarte?', 'error');
+        showToast('❌ Usuario no encontrado', 'error');
       }
     }
 
@@ -193,29 +170,16 @@
         showToast('Completa los campos obligatorios (*)', 'error');
         return;
       }
-      
-      if (password !== confirm) {
-        showToast('Las contraseñas no coinciden', 'error');
-        return;
-      }
-      
-      if (password.length < 4) {
-        showToast('La contraseña debe tener al menos 4 caracteres', 'error');
-        return;
-      }
+      if (password !== confirm) { showToast('Las contraseñas no coinciden', 'error'); return; }
+      if (password.length < 4) { showToast('La contraseña debe tener al menos 4 caracteres', 'error'); return; }
       
       const users = JSON.parse(localStorage.getItem(STORAGE_KEYS.USERS) || '{}');
+      if (users[username]) { showToast('Ese usuario ya existe', 'error'); return; }
       
-      if (users[username]) {
-        showToast('Ese usuario ya existe. Elige otro', 'error');
-        return;
-      }
-      
-      // Crear nuevo usuario con contraseña
       const newUser = {
         id: 'user_' + Date.now(),
         username: username,
-        password: password, // Guardamos la contraseña
+        password: password,
         displayName: name || username,
         email: email,
         bio: '',
@@ -229,21 +193,12 @@
       users[username] = newUser;
       localStorage.setItem(STORAGE_KEYS.USERS, JSON.stringify(users));
       
-      // Guardar sesión sin la contraseña
       const userWithoutPassword = { ...newUser };
       delete userWithoutPassword.password;
       localStorage.setItem(STORAGE_KEYS.CURRENT_USER, JSON.stringify(userWithoutPassword));
       
-      showToast('✅ ¡Cuenta creada exitosamente!', 'success');
-      setTimeout(() => {
-        window.location.href = '/albumbyalbum/';
-      }, 500);
-    }
-
-    // Si ya hay sesión, redirigir al feed
-    const savedUser = localStorage.getItem(STORAGE_KEYS.CURRENT_USER);
-    if (savedUser && !window.location.pathname.includes('login.html')) {
-      window.location.href = '/albumbyalbum/';
+      showToast('✅ ¡Cuenta creada!', 'success');
+      setTimeout(() => { window.location.href = '../index.html'; }, 500);
     }
   </script>
 </body>
