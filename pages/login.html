@@ -24,7 +24,7 @@
       width: 100%;
       max-width: 420px;
     }
-    .auth-card h1 { text-align: center; margin-bottom: 32px; font-size: 1.5rem; }
+    .auth-card h1 { text-align: center; margin-bottom: 32px; font-size: 1.5rem; color: white; }
     .navbar__logo {
       font-family: 'Instrument Serif', serif;
       font-size: 2rem;
@@ -38,6 +38,8 @@
     .btn-full { width: 100%; justify-content: center; }
     .auth-switch { text-align: center; margin-top: 24px; font-size: 0.85rem; color: #9b9aaa; }
     .auth-switch a { color: #a89cf9; cursor: pointer; }
+    .toast { position: fixed; bottom: 20px; right: 20px; background: #1a1a1e; border-left: 3px solid var(--green); padding: 12px 20px; border-radius: 8px; display: none; }
+    .toast.show { display: block; }
   </style>
 </head>
 <body>
@@ -88,61 +90,41 @@
     </div>
   </div>
 
-  <div class="toast"></div>
+  <div class="toast" id="toast"></div>
 
   <script>
     const SUPABASE_URL = 'https://omwdajgpywdwrbiguvfl.supabase.co';
     const SUPABASE_ANON_KEY = 'sb_publishable_e4HpONc7gleaNaxEG6FTUQ_5t4JbdLa';
-    
-    console.log('🔵 Login page loaded');
-    console.log('Supabase URL:', SUPABASE_URL);
-    
     const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-    const STORAGE_KEYS = { CURRENT_USER: 'soundlog_current_user' };
-
+    
     let isLoginMode = true;
+
+    function showToast(message, type) {
+      const toast = document.getElementById('toast');
+      toast.textContent = message;
+      toast.style.borderLeftColor = type === 'success' ? '#1db954' : '#e74c3c';
+      toast.classList.add('show');
+      setTimeout(() => toast.classList.remove('show'), 3000);
+    }
 
     function toggleAuthMode() {
       isLoginMode = !isLoginMode;
-      const loginForm = document.getElementById('login-form');
-      const registerForm = document.getElementById('register-form');
-      const title = document.getElementById('auth-title');
-      const switchText = document.getElementById('switch-text');
-      
-      if (isLoginMode) {
-        loginForm.style.display = 'block';
-        registerForm.style.display = 'none';
-        title.textContent = 'Iniciar sesión';
-        switchText.innerHTML = '¿No tienes cuenta? <a onclick="toggleAuthMode()">Regístrate</a>';
-      } else {
-        loginForm.style.display = 'none';
-        registerForm.style.display = 'block';
-        title.textContent = 'Registrarse';
-        switchText.innerHTML = '¿Ya tienes cuenta? <a onclick="toggleAuthMode()">Inicia sesión</a>';
-      }
-    }
-
-    function showToast(message, type) {
-      let toast = document.querySelector('.toast');
-      if (!toast) {
-        toast = document.createElement('div');
-        toast.className = 'toast';
-        document.body.appendChild(toast);
-      }
-      toast.className = `toast ${type}`;
-      toast.innerHTML = `<i class="ti ti-${type === 'success' ? 'check' : 'alert-circle'}"></i> ${message}`;
-      toast.classList.add('show');
-      setTimeout(() => toast.classList.remove('show'), 3000);
+      document.getElementById('login-form').style.display = isLoginMode ? 'block' : 'none';
+      document.getElementById('register-form').style.display = isLoginMode ? 'none' : 'block';
+      document.getElementById('auth-title').textContent = isLoginMode ? 'Iniciar sesión' : 'Registrarse';
+      document.getElementById('switch-text').innerHTML = isLoginMode 
+        ? '¿No tienes cuenta? <a onclick="toggleAuthMode()">Regístrate</a>'
+        : '¿Ya tienes cuenta? <a onclick="toggleAuthMode()">Inicia sesión</a>';
     }
 
     async function handleLogin() {
       const username = document.getElementById('login-username').value.trim();
       const password = document.getElementById('login-password').value;
       
-      if (!username) { showToast('Ingresa tu usuario', 'error'); return; }
-      if (!password) { showToast('Ingresa tu contraseña', 'error'); return; }
-      
-      console.log('Intentando login:', username);
+      if (!username || !password) {
+        showToast('Completa todos los campos', 'error');
+        return;
+      }
       
       const { data, error } = await supabase
         .from('users')
@@ -151,16 +133,13 @@
         .eq('password', password)
         .single();
       
-      console.log('Respuesta:', data, error);
-      
       if (error || !data) {
-        showToast('❌ Usuario o contraseña incorrectos', 'error');
+        showToast('Usuario o contraseña incorrectos', 'error');
       } else {
-        const userWithoutPassword = { ...data };
-        delete userWithoutPassword.password;
-        localStorage.setItem(STORAGE_KEYS.CURRENT_USER, JSON.stringify(userWithoutPassword));
+        delete data.password;
+        localStorage.setItem('soundlog_current_user', JSON.stringify(data));
         showToast('¡Bienvenido!', 'success');
-        setTimeout(() => { window.location.href = '../index.html'; }, 500);
+        setTimeout(() => { window.location.href = '../index.html'; }, 1000);
       }
     }
 
@@ -169,17 +148,21 @@
       const email = document.getElementById('register-email').value.trim();
       const password = document.getElementById('register-password').value;
       const confirm = document.getElementById('register-confirm').value;
-      const name = document.getElementById('register-name')?.value.trim() || username;
       
       if (!username || !email || !password) {
-        showToast('Completa los campos obligatorios (*)', 'error');
+        showToast('Completa todos los campos', 'error');
         return;
       }
-      if (password !== confirm) { showToast('Las contraseñas no coinciden', 'error'); return; }
-      if (password.length < 4) { showToast('La contraseña debe tener al menos 4 caracteres', 'error'); return; }
+      if (password !== confirm) {
+        showToast('Las contraseñas no coinciden', 'error');
+        return;
+      }
+      if (password.length < 4) {
+        showToast('La contraseña debe tener al menos 4 caracteres', 'error');
+        return;
+      }
       
-      console.log('Intentando registrar:', username);
-      
+      // Verificar si el usuario ya existe
       const { data: existing } = await supabase
         .from('users')
         .select('username')
@@ -187,7 +170,7 @@
         .single();
       
       if (existing) {
-        showToast('Ese usuario ya existe. Elige otro', 'error');
+        showToast('Ese usuario ya existe', 'error');
         return;
       }
       
@@ -197,22 +180,19 @@
           username: username,
           email: email,
           password: password,
-          display_name: name,
+          display_name: username,
           avatar: username.substring(0, 2).toUpperCase(),
-          avatar_color: ['purple', 'coral', 'teal', 'pink'][Math.floor(Math.random() * 4)]
+          avatar_color: 'purple'
         }])
         .select();
       
-      console.log('Resultado registro:', data, error);
-      
       if (error) {
-        showToast('Error al registrar: ' + error.message, 'error');
+        showToast('Error: ' + error.message, 'error');
       } else if (data && data[0]) {
-        const userWithoutPassword = { ...data[0] };
-        delete userWithoutPassword.password;
-        localStorage.setItem(STORAGE_KEYS.CURRENT_USER, JSON.stringify(userWithoutPassword));
-        showToast('✅ ¡Cuenta creada exitosamente!', 'success');
-        setTimeout(() => { window.location.href = '../index.html'; }, 500);
+        delete data[0].password;
+        localStorage.setItem('soundlog_current_user', JSON.stringify(data[0]));
+        showToast('¡Cuenta creada!', 'success');
+        setTimeout(() => { window.location.href = '../index.html'; }, 1000);
       }
     }
   </script>
