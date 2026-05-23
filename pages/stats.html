@@ -63,7 +63,6 @@
       <p class="text-muted">Visualiza tus hábitos musicales</p>
     </div>
 
-    <!-- Tarjetas rápidas -->
     <div class="grid-3" style="display:grid; grid-template-columns:repeat(3,1fr); gap:16px; margin-bottom:24px;">
       <div class="stat-card">
         <i class="ti ti-album" style="font-size:32px; color:var(--accent-light);"></i>
@@ -82,32 +81,27 @@
       </div>
     </div>
 
-    <!-- Distribución de calificaciones -->
     <div class="card mb-24">
       <div class="section-label">📊 DISTRIBUCIÓN DE CALIFICACIONES</div>
       <div id="rating-distribution"></div>
     </div>
 
-    <!-- Géneros más escuchados -->
     <div class="card mb-24">
       <div class="section-label">🎸 GÉNEROS MÁS ESCUCHADOS</div>
       <div id="genres-container"></div>
     </div>
 
-    <!-- Décadas favoritas -->
     <div class="card mb-24">
       <div class="section-label">📅 DÉCADAS FAVORITAS</div>
       <div id="decades-container"></div>
     </div>
 
-    <!-- Actividad por mes -->
     <div class="card">
       <div class="section-label">📈 ACTIVIDAD MENSUAL</div>
       <div id="monthly-activity"></div>
     </div>
   </main>
 
-  <!-- MODAL AGREGAR ÁLBUM -->
   <div id="addAlbumModal" class="modal">
     <div class="modal__content">
       <div class="modal__header">
@@ -158,6 +152,7 @@
   </div>
 
   <div class="toast"></div>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="/albumbyalbum/js/main.js"></script>
 
   <script>
