@@ -58,7 +58,6 @@
 </head>
 <body>
 
-  <!-- NAVBAR -->
   <nav class="navbar">
     <div class="container">
       <div class="navbar__inner">
@@ -81,7 +80,6 @@
     </div>
   </nav>
 
-  <!-- PROFILE HEADER -->
   <div class="profile-header">
     <div class="container">
       <div class="flex items-end gap-24" style="padding-bottom: 20px; flex-wrap: wrap;">
@@ -119,7 +117,6 @@
         </div>
       </div>
 
-      <!-- Tabs del perfil -->
       <div class="flex" style="gap: 0; border-top: 1px solid var(--border); margin-top: 4px; flex-wrap: wrap;">
         <button class="profile-tab active" onclick="switchProfileTab(this, 'actividad')">📊 Actividad</button>
         <button class="profile-tab" onclick="switchProfileTab(this, 'albums')">💿 Álbumes</button>
@@ -130,14 +127,11 @@
     </div>
   </div>
 
-  <!-- CONTENT -->
   <main class="container">
     <div style="display:grid; grid-template-columns:1fr 300px; gap:24px; align-items:start;">
 
-      <!-- PANEL PRINCIPAL -->
       <div>
 
-        <!-- TAB: ACTIVIDAD -->
         <div id="tab-actividad">
           <div class="card mb-16">
             <div class="section-label">📅 Actividad reciente</div>
@@ -154,21 +148,18 @@
           </div>
         </div>
 
-        <!-- TAB: ÁLBUMES -->
         <div id="tab-albums" style="display:none;">
           <div class="card" id="user-albums-container">
             <div class="empty-state"><i class="ti ti-album"></i><p>Todavía no has agregado ningún álbum</p><button class="btn btn--primary btn--sm mt-8" onclick="openAddAlbumModal()">Agregar mi primer álbum</button></div>
           </div>
         </div>
 
-        <!-- TAB: RESEÑAS -->
         <div id="tab-reseñas" style="display:none;">
           <div class="card" id="user-reviews-container">
             <div class="empty-state"><i class="ti ti-edit"></i><p>No has escrito ninguna reseña aún</p><button class="btn btn--primary btn--sm mt-8" onclick="openAddAlbumModal()">Escribir primera reseña</button></div>
           </div>
         </div>
 
-        <!-- TAB: FAVORITOS -->
         <div id="tab-favoritos" style="display:none;">
           <div class="card mb-16">
             <div class="section-label">🎵 Álbumes favoritos</div>
@@ -188,7 +179,6 @@
           </div>
         </div>
 
-        <!-- TAB: ESTADÍSTICAS -->
         <div id="tab-stats" style="display:none;">
           <div class="card" id="user-stats-container">
             <div class="empty-state"><i class="ti ti-chart-bar"></i><p>Agrega álbumes para ver tus estadísticas</p></div>
@@ -197,7 +187,6 @@
 
       </div>
 
-      <!-- SIDEBAR DERECHA -->
       <aside>
         <div class="card mb-16">
           <div class="section-label">🏆 Logros desbloqueados</div>
@@ -224,7 +213,6 @@
     </div>
   </main>
 
-  <!-- MODAL AGREGAR ÁLBUM -->
   <div id="addAlbumModal" class="modal">
     <div class="modal__content">
       <div class="modal__header">
@@ -274,7 +262,6 @@
     </div>
   </div>
 
-  <!-- MODAL EDITAR PERFIL -->
   <div id="editProfileModal" class="modal">
     <div class="modal__content">
       <div class="modal__header">
@@ -295,6 +282,7 @@
   </div>
 
   <div class="toast"></div>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="/albumbyalbum/js/main.js"></script>
   
   <script>
