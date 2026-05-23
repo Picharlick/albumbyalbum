@@ -8,7 +8,7 @@ async function init() {
   const savedUser = localStorage.getItem('soundlog_current_user');
   
   if (!savedUser) {
-    window.location.href = 'pages/login.html';
+    window.location.href = '/albumbyalbum/pages/login.html';
     return;
   }
   
@@ -18,7 +18,7 @@ async function init() {
   
   if (error || !data) {
     localStorage.removeItem('soundlog_current_user');
-    window.location.href = 'pages/login.html';
+    window.location.href = '/albumbyalbum/pages/login.html';
     return;
   }
   
@@ -69,7 +69,7 @@ async function submitAlbum() {
 
 function openAddAlbumModal() { document.getElementById('addAlbumModal').classList.add('active'); }
 function closeModal(id) { document.getElementById(id).classList.remove('active'); }
-function logout() { localStorage.removeItem('soundlog_current_user'); window.location.href = 'pages/login.html'; }
+function logout() { localStorage.removeItem('soundlog_current_user'); window.location.href = '/albumbyalbum/pages/login.html'; }
 
 window.openAddAlbumModal = openAddAlbumModal;
 window.closeModal = closeModal;
