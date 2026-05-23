@@ -110,7 +110,6 @@
 
     let isLoginMode = true;
 
-    // No crear ningún usuario demo automáticamente
     if (!localStorage.getItem(STORAGE_KEYS.USERS)) {
       localStorage.setItem(STORAGE_KEYS.USERS, JSON.stringify({}));
     }
@@ -157,15 +156,25 @@
         return;
       }
       
-      const users = JSON.parse(localStorage.getItem(STORAGE_KEYS.USERS) || '{}');
+      if (!password) {
+        showToast('Ingresa tu contraseña', 'error');
+        return;
+      }
       
-      if (users[username]) {
-        // No verificamos contraseña en esta demo, solo usuario
-        localStorage.setItem(STORAGE_KEYS.CURRENT_USER, JSON.stringify(users[username]));
+      const users = JSON.parse(localStorage.getItem(STORAGE_KEYS.USERS) || '{}');
+      const user = users[username];
+      
+      if (user && user.password === password) {
+        // Eliminar la contraseña antes de guardar en sesión por seguridad
+        const userWithoutPassword = { ...user };
+        delete userWithoutPassword.password;
+        localStorage.setItem(STORAGE_KEYS.CURRENT_USER, JSON.stringify(userWithoutPassword));
         showToast('¡Bienvenido!', 'success');
         setTimeout(() => {
           window.location.href = '/albumbyalbum/';
         }, 500);
+      } else if (user && user.password !== password) {
+        showToast('Contraseña incorrecta', 'error');
       } else {
         showToast('Usuario no encontrado. ¿Quieres registrarte?', 'error');
       }
@@ -200,10 +209,11 @@
         return;
       }
       
-      // Crear nuevo usuario con datos VACÍOS
+      // Crear nuevo usuario con contraseña
       const newUser = {
         id: 'user_' + Date.now(),
         username: username,
+        password: password, // Guardamos la contraseña
         displayName: name || username,
         email: email,
         bio: '',
@@ -216,7 +226,11 @@
       
       users[username] = newUser;
       localStorage.setItem(STORAGE_KEYS.USERS, JSON.stringify(users));
-      localStorage.setItem(STORAGE_KEYS.CURRENT_USER, JSON.stringify(newUser));
+      
+      // Guardar sesión sin la contraseña
+      const userWithoutPassword = { ...newUser };
+      delete userWithoutPassword.password;
+      localStorage.setItem(STORAGE_KEYS.CURRENT_USER, JSON.stringify(userWithoutPassword));
       
       showToast('¡Cuenta creada exitosamente!', 'success');
       setTimeout(() => {
