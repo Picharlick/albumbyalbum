@@ -1,3 +1,30 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Soundlog — Login</title>
+  <link rel="stylesheet" href="../css/styles.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    body { background: #0d0d0f; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; font-family: system-ui; }
+    .card { background: #1a1a1e; padding: 40px; border-radius: 16px; width: 320px; }
+    input, button { width: 100%; margin: 8px 0; padding: 12px; border-radius: 8px; border: none; }
+    button { background: #7c6af7; color: white; cursor: pointer; }
+    .switch { text-align: center; margin-top: 16px; color: #a89cf9; cursor: pointer; }
+    h2 { color: white; text-align: center; }
+  </style>
+</head>
+<body>
+<div class="card">
+  <h2 id="title">Iniciar sesión</h2>
+  <input type="text" id="username" placeholder="Usuario">
+  <input type="password" id="password" placeholder="Contraseña">
+  <button id="actionBtn">Iniciar sesión</button>
+  <div class="switch" id="switchBtn">¿No tienes cuenta? Regístrate</div>
+  <div id="msg" style="color:#e74c3c; margin-top:12px; text-align:center;"></div>
+</div>
+
 <script>
   const SUPABASE_URL = 'https://omwdajgpywdwrbiguvfl.supabase.co';
   const SUPABASE_ANON_KEY = 'sb_publishable_e4HpONc7gleaNaxEG6FTUQ_5t4JbdLa';
@@ -55,3 +82,5 @@
     }
   };
 </script>
+</body>
+</html>
