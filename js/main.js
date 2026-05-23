@@ -1,6 +1,6 @@
 /* =============================================
    SOUNDLOG — main.js
-   Sin datos demo, con sidebar dinámico
+   Con tabs de feed (Amigos, Global, Popular) y validación de contraseña
    ============================================= */
 
 const STORAGE_KEYS = {
@@ -15,6 +15,7 @@ const STORAGE_KEYS = {
 
 let currentUser = null;
 let currentForumFilter = 'todos';
+let currentFeedTab = 'global'; // 'amigos', 'global', 'popular'
 
 // --- LIMPIEZA DE DATOS DEMO ---
 function cleanDemoData() {
@@ -78,6 +79,9 @@ function initUserData() {
   let reviews = JSON.parse(localStorage.getItem(STORAGE_KEYS.REVIEWS) || '{}');
   if (!reviews[currentUser.id]) reviews[currentUser.id] = [];
   localStorage.setItem(STORAGE_KEYS.REVIEWS, JSON.stringify(reviews));
+  let follows = JSON.parse(localStorage.getItem(STORAGE_KEYS.FOLLOWS) || '{}');
+  if (!follows[currentUser.id]) follows[currentUser.id] = [];
+  localStorage.setItem(STORAGE_KEYS.FOLLOWS, JSON.stringify(follows));
   if (!localStorage.getItem(STORAGE_KEYS.FORUMS)) {
     const sampleForums = {
       forum1: { id: 'forum1', name: 'Rock Alternativo', description: 'Radiohead, Strokes, Arcade Fire', category: 'rock', createdBy: 'system', createdByUsername: 'Soundlog', createdAt: new Date().toISOString(), postsCount: 0 },
@@ -103,7 +107,6 @@ function updateUI() {
   document.querySelectorAll('.album-count').forEach(el => el.textContent = albums.length);
   document.querySelectorAll('.review-count').forEach(el => el.textContent = getUserReviews().length);
   
-  // Actualizar sidebar de álbumes
   const sidebarAlbumCount = document.getElementById('sidebar-album-count');
   if (sidebarAlbumCount) sidebarAlbumCount.textContent = albums.length;
 }
@@ -122,6 +125,90 @@ function getAllUsers() {
   return JSON.parse(localStorage.getItem(STORAGE_KEYS.USERS) || '{}');
 }
 
+function getUserFollows() {
+  const all = JSON.parse(localStorage.getItem(STORAGE_KEYS.FOLLOWS) || '{}');
+  return all[currentUser?.id] || [];
+}
+
+function followUser(userId) {
+  const follows = JSON.parse(localStorage.getItem(STORAGE_KEYS.FOLLOWS) || '{}');
+  if (!follows[currentUser.id]) follows[currentUser.id] = [];
+  if (!follows[currentUser.id].includes(userId)) {
+    follows[currentUser.id].push(userId);
+    localStorage.setItem(STORAGE_KEYS.FOLLOWS, JSON.stringify(follows));
+  }
+}
+
+function unfollowUser(userId) {
+  const follows = JSON.parse(localStorage.getItem(STORAGE_KEYS.FOLLOWS) || '{}');
+  if (follows[currentUser.id]) {
+    follows[currentUser.id] = follows[currentUser.id].filter(id => id !== userId);
+    localStorage.setItem(STORAGE_KEYS.FOLLOWS, JSON.stringify(follows));
+  }
+}
+
+// ============ FEED CON TABS ============
+function switchTab(btn) {
+  document.querySelectorAll('.feed-tab').forEach(t => t.classList.remove('active'));
+  btn.classList.add('active');
+  
+  const tabText = btn.textContent.trim().toLowerCase();
+  if (tabText === 'amigos') currentFeedTab = 'amigos';
+  else if (tabText === 'global') currentFeedTab = 'global';
+  else if (tabText === 'popular') currentFeedTab = 'popular';
+  
+  loadFeed();
+}
+
+function loadFeed() {
+  const container = document.getElementById('feed-container');
+  if (!container) return;
+  
+  const allReviews = JSON.parse(localStorage.getItem(STORAGE_KEYS.REVIEWS) || '{}');
+  const users = getAllUsers();
+  const follows = getUserFollows();
+  
+  let list = [];
+  for (let uid in allReviews) {
+    const user = Object.values(users).find(u => u.id === uid);
+    if (user && allReviews[uid]) {
+      allReviews[uid].forEach(r => {
+        list.push({ ...r, userId: uid, username: user.username, userAvatar: user.avatar, userColor: user.avatarColor });
+      });
+    }
+  }
+  
+  // Filtrar según el tab activo
+  if (currentFeedTab === 'amigos') {
+    list = list.filter(r => follows.includes(r.userId));
+  } else if (currentFeedTab === 'popular') {
+    list.sort((a, b) => (b.rating || 0) - (a.rating || 0));
+  } else {
+    list.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+  }
+  
+  list = list.slice(0, 30);
+  
+  if (!list.length) {
+    let emptyMessage = '';
+    if (currentFeedTab === 'amigos') {
+      emptyMessage = 'No hay reseñas de amigos. Sigue a más usuarios para ver su actividad.';
+    } else {
+      emptyMessage = 'No hay reseñas aún. ¡Sé el primero en agregar un álbum!';
+    }
+    container.innerHTML = `<div class="empty-state"><i class="ti ti-music"></i><p>${emptyMessage}</p><button class="btn btn--primary btn--sm mt-8" onclick="openAddAlbumModal()">Agregar primer álbum</button></div>`;
+    return;
+  }
+  
+  let html = '';
+  list.forEach(r => {
+    const stars = '★'.repeat(r.rating) + '☆'.repeat(5-r.rating);
+    html += `<div class="review"><div class="review__header"><div class="avatar avatar--md avatar--${r.userColor||'purple'}">${r.userAvatar||r.username.substring(0,2)}</div><div class="review__meta"><div class="review__who"><strong>${r.username}</strong> <span class="text-muted">escuchó</span> <strong>${r.albumTitle}</strong> <span class="badge badge--accent">${r.artist}</span></div><div class="flex items-center gap-8"><div class="stars">${stars}</div><span class="text-xs text-hint">${getTimeAgo(new Date(r.createdAt))}</span></div></div><div class="review__album-thumb">${getAlbumEmoji(r.albumTitle)}</div></div>${r.text ? `<div class="review__text">${r.text}</div>` : ''}</div>`;
+  });
+  container.innerHTML = html;
+}
+
+// ============ FUNCIONES DE ÁLBUMES ============
 function openAddAlbumModal() {
   const modal = document.getElementById('addAlbumModal');
   if (modal) modal.classList.add('active');
@@ -175,10 +262,25 @@ function submitAlbum() {
     loadUserAlbums(); loadUserReviews(); loadUserStats(); loadUserFavorites();
   } else if (window.location.pathname.includes('stats.html')) {
     loadStatsPage();
+  } else if (window.location.pathname.includes('index.html') || window.location.pathname === '/albumbyalbum/') {
+    loadFeed();
   }
   updateUI();
 }
 
+function deleteAlbum(albumId) {
+  if (!confirm('¿Eliminar este álbum?')) return;
+  let allAlbums = JSON.parse(localStorage.getItem(STORAGE_KEYS.ALBUMS) || '{}');
+  allAlbums[currentUser.id] = allAlbums[currentUser.id].filter(a => a.id !== albumId);
+  localStorage.setItem(STORAGE_KEYS.ALBUMS, JSON.stringify(allAlbums));
+  let allReviews = JSON.parse(localStorage.getItem(STORAGE_KEYS.REVIEWS) || '{}');
+  allReviews[currentUser.id] = allReviews[currentUser.id].filter(r => r.id !== albumId);
+  localStorage.setItem(STORAGE_KEYS.REVIEWS, JSON.stringify(allReviews));
+  showToast('Eliminado', 'success');
+  loadUserAlbums(); loadUserReviews(); loadUserStats(); loadUserFavorites(); updateUI();
+}
+
+// ============ PERFIL ============
 function loadProfile() {
   if (!currentUser) return;
   const usernameEl = document.getElementById('profile-username');
@@ -295,46 +397,7 @@ function loadUserStats() {
   container.innerHTML = `<div class="mb-16"><div class="section-label">🎸 Géneros favoritos</div>${genreHtml || '<div class="text-muted">Sin datos</div>'}</div><div><div class="section-label">🎤 Artistas más escuchados</div>${artistHtml || '<div class="text-muted">Sin datos</div>'}</div>`;
 }
 
-function deleteAlbum(albumId) {
-  if (!confirm('¿Eliminar este álbum?')) return;
-  let allAlbums = JSON.parse(localStorage.getItem(STORAGE_KEYS.ALBUMS) || '{}');
-  allAlbums[currentUser.id] = allAlbums[currentUser.id].filter(a => a.id !== albumId);
-  localStorage.setItem(STORAGE_KEYS.ALBUMS, JSON.stringify(allAlbums));
-  let allReviews = JSON.parse(localStorage.getItem(STORAGE_KEYS.REVIEWS) || '{}');
-  allReviews[currentUser.id] = allReviews[currentUser.id].filter(r => r.id !== albumId);
-  localStorage.setItem(STORAGE_KEYS.REVIEWS, JSON.stringify(allReviews));
-  showToast('Eliminado', 'success');
-  loadUserAlbums(); loadUserReviews(); loadUserStats(); loadUserFavorites(); updateUI();
-}
-
-function loadFeed() {
-  const container = document.getElementById('feed-container');
-  if (!container) return;
-  const allReviews = JSON.parse(localStorage.getItem(STORAGE_KEYS.REVIEWS) || '{}');
-  const users = getAllUsers();
-  let list = [];
-  for (let uid in allReviews) {
-    const user = Object.values(users).find(u => u.id === uid);
-    if (user && allReviews[uid]) {
-      allReviews[uid].forEach(r => {
-        list.push({ ...r, userId: uid, username: user.username, userAvatar: user.avatar, userColor: user.avatarColor });
-      });
-    }
-  }
-  list.sort((a,b) => new Date(b.createdAt) - new Date(a.createdAt));
-  list = list.slice(0,20);
-  if (!list.length) {
-    container.innerHTML = `<div class="empty-state"><i class="ti ti-music"></i><p>No hay reseñas aún</p><button class="btn btn--primary btn--sm mt-8" onclick="openAddAlbumModal()">Agregar primera</button></div>`;
-    return;
-  }
-  let html = '';
-  list.forEach(r => {
-    const stars = '★'.repeat(r.rating) + '☆'.repeat(5-r.rating);
-    html += `<div class="review"><div class="review__header"><div class="avatar avatar--md avatar--${r.userColor||'purple'}">${r.userAvatar||r.username.substring(0,2)}</div><div class="review__meta"><div class="review__who"><strong>${r.username}</strong> <span class="text-muted">escuchó</span> <strong>${r.albumTitle}</strong> <span class="badge badge--accent">${r.artist}</span></div><div class="flex items-center gap-8"><div class="stars">${stars}</div><span class="text-xs text-hint">${getTimeAgo(new Date(r.createdAt))}</span></div></div><div class="review__album-thumb">${getAlbumEmoji(r.albumTitle)}</div></div>${r.text ? `<div class="review__text">${r.text}</div>` : ''}</div>`;
-  });
-  container.innerHTML = html;
-}
-
+// ============ EXPLORAR ============
 function loadExplorePage() {
   const container = document.getElementById('explore-container');
   if (!container) return;
@@ -372,6 +435,7 @@ function quickAddAlbum(title, artist) {
   openAddAlbumModal();
 }
 
+// ============ FOROS ============
 function loadForums() {
   const container = document.getElementById('forums-container');
   if (!container) return;
@@ -460,6 +524,7 @@ function createForum() {
   if (document.getElementById('forumDescription')) document.getElementById('forumDescription').value = '';
 }
 
+// ============ STATS ============
 function loadStatsPage() {
   const albums = getUserAlbums();
   const totalAlbumsEl = document.getElementById('totalAlbums');
@@ -611,29 +676,6 @@ function escapeHtml(str) {
   });
 }
 
-// Funciones globales
-window.openAddAlbumModal = openAddAlbumModal;
-window.closeModal = closeModal;
-window.submitAlbum = submitAlbum;
-window.switchTab = switchTab;
-window.deleteAlbum = deleteAlbum;
-window.filterForums = filterForums;
-window.openForum = openForum;
-window.openCreateForumModal = openCreateForumModal;
-window.createForum = createForum;
-window.submitForumPost = submitForumPost;
-window.quickAddAlbum = quickAddAlbum;
-window.logout = logout;
-window.editProfile = editProfile;
-window.saveProfile = saveProfile;
-window.loadStatsPage = loadStatsPage;
-
-function switchTab(btn) {
-  document.querySelectorAll('.feed-tab').forEach(t => t.classList.remove('active'));
-  btn.classList.add('active');
-  loadFeed();
-}
-
 function switchProfileTab(btn, tabId) {
   document.querySelectorAll('.profile-tab').forEach(t => t.classList.remove('active'));
   btn.classList.add('active');
@@ -671,6 +713,24 @@ function saveProfile() {
     closeModal('editProfileModal');
   }
 }
+
+// Funciones globales
+window.openAddAlbumModal = openAddAlbumModal;
+window.closeModal = closeModal;
+window.submitAlbum = submitAlbum;
+window.switchTab = switchTab;
+window.deleteAlbum = deleteAlbum;
+window.filterForums = filterForums;
+window.openForum = openForum;
+window.openCreateForumModal = openCreateForumModal;
+window.createForum = createForum;
+window.submitForumPost = submitForumPost;
+window.quickAddAlbum = quickAddAlbum;
+window.logout = logout;
+window.editProfile = editProfile;
+window.saveProfile = saveProfile;
+window.loadStatsPage = loadStatsPage;
+window.switchProfileTab = switchProfileTab;
 
 // Inicializar
 document.addEventListener('DOMContentLoaded', init);
