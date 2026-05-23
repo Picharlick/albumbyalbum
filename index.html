@@ -6,6 +6,8 @@
   <title>Soundlog — Feed</title>
   <link rel="stylesheet" href="css/styles.css" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.9.0/dist/tabler-icons.min.css" />
+  <!-- Supabase SDK -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
 
@@ -153,5 +155,14 @@
 
   <div class="toast"></div>
   <script src="js/main.js"></script>
+  <script>
+    function switchTab(btn) {
+      document.querySelectorAll('.feed-tab').forEach(t => t.classList.remove('active'));
+      btn.classList.add('active');
+      const tabText = btn.textContent.trim().toLowerCase();
+      currentFeedTab = tabText === 'amigos' ? 'amigos' : (tabText === 'popular' ? 'popular' : 'global');
+      loadFeed();
+    }
+  </script>
 </body>
 </html>
