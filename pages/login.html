@@ -2,61 +2,46 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <title>Soundlog — Acceso</title>
+  <title>Login Soundlog</title>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
     body { background: #0d0d0f; color: white; font-family: sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
-    .card { background: #1a1a1e; padding: 30px; border-radius: 12px; width: 300px; box-shadow: 0 4px 15px rgba(0,0,0,0.5); }
-    input { width: 100%; padding: 12px; margin: 10px 0; border-radius: 6px; border: 1px solid #333; background: #000; color: white; box-sizing: border-box; }
-    button { width: 100%; padding: 12px; background: #7c6af7; border: none; color: white; cursor: pointer; border-radius: 6px; font-weight: bold; margin-top: 10px; }
-    #msg { text-align: center; font-size: 13px; margin-top: 15px; min-height: 20px; }
+    .card { background: #1a1a1e; padding: 30px; border-radius: 12px; width: 300px; }
+    input { width: 100%; padding: 10px; margin: 10px 0; border-radius: 5px; border: 1px solid #333; background: #000; color: white; box-sizing: border-box; }
+    button { width: 100%; padding: 10px; background: #7c6af7; border: none; color: white; cursor: pointer; border-radius: 5px; }
   </style>
 </head>
 <body>
-
 <div class="card">
-  <h2 id="title" style="text-align:center;">Iniciar Sesión</h2>
+  <h2 id="title">Acceso</h2>
   <input type="text" id="username" placeholder="Usuario">
   <input type="password" id="password" placeholder="Contraseña">
   <button id="btnAction">Entrar</button>
-  <p id="msg"></p>
-  <p style="text-align:center; font-size: 12px; cursor:pointer; color:#7c6af7;" onclick="toggleMode()" id="switchText">¿No tienes cuenta? Regístrate</p>
+  <p id="msg" style="text-align:center; font-size:12px;"></p>
 </div>
 
 <script>
   const supabase = window.supabase.createClient('https://omwdajgpywdwrbiguvfl.supabase.co', 'sb_publishable_e4HpONc7gleaNaxEG6FTUQ_5t4JbdLa');
-  let isLogin = true;
+  const btn = document.getElementById('btnAction');
 
-  function toggleMode() {
-    isLogin = !isLogin;
-    document.getElementById('title').textContent = isLogin ? 'Iniciar Sesión' : 'Registrarse';
-    document.getElementById('btnAction').textContent = isLogin ? 'Entrar' : 'Crear cuenta';
-    document.getElementById('switchText').textContent = isLogin ? '¿No tienes cuenta? Regístrate' : '¿Ya tienes cuenta? Inicia sesión';
-  }
-
-  document.getElementById('btnAction').onclick = async () => {
+  btn.onclick = async () => {
     const user = document.getElementById('username').value.trim();
     const pass = document.getElementById('password').value;
     const msg = document.getElementById('msg');
 
-    if (!user || !pass) { msg.textContent = 'Completa ambos campos'; return; }
-    msg.textContent = 'Procesando...';
-
-    if (isLogin) {
-      const { data, error } = await supabase.from('users').select('*').eq('username', user).eq('password', pass).maybeSingle();
-      if (data) {
-        localStorage.setItem('soundlog_current_user', JSON.stringify(data));
-        window.location.href = '../index.html';
-      } else {
-        msg.textContent = 'Usuario o contraseña incorrectos';
-      }
+    // 1. Intentar Loguear
+    const { data, error } = await supabase.from('users').select('*').eq('username', user).eq('password', pass).maybeSingle();
+    
+    if (data) {
+      localStorage.setItem('soundlog_current_user', JSON.stringify(data));
+      window.location.href = '/albumbyalbum/index.html';
     } else {
-      const { error } = await supabase.from('users').insert([{ username: user, password: pass, email: user + '@soundlog.com' }]);
-      if (error) {
-        msg.textContent = 'Error: ' + error.message;
+      // 2. Si falla, intentar Registrar
+      const { error: regErr } = await supabase.from('users').insert([{ username: user, password: pass, email: user + '@soundlog.com' }]);
+      if (!regErr) {
+        msg.textContent = "Usuario registrado. Haz clic en Entrar.";
       } else {
-        msg.textContent = '¡Creado! Ahora puedes entrar.';
-        toggleMode();
+        msg.textContent = "Error: " + (regErr.message);
       }
     }
   };
