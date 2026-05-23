@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Soundlog — Foros</title>
+  <link rel="stylesheet" href="/albumbyalbum/css/styles.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.9.0/dist/tabler-icons.min.css" />
+</head>
+<body>
+
+  <nav class="navbar">
+    <div class="container">
+      <div class="navbar__inner">
+        <a href="/albumbyalbum/" class="navbar__logo display">Sound<span>log</span></a>
+        <nav class="navbar__nav">
+          <a href="/albumbyalbum/" class="navbar__link"><i class="ti ti-home"></i> Feed</a>
+          <a href="/albumbyalbum/pages/explorar.html" class="navbar__link"><i class="ti ti-compass"></i> Explorar</a>
+          <a href="/albumbyalbum/pages/foros.html" class="navbar__link active"><i class="ti ti-message-circle"></i> Foros</a>
+          <a href="/albumbyalbum/pages/stats.html" class="navbar__link"><i class="ti ti-chart-bar"></i> Stats</a>
+        </nav>
+        <div class="navbar__search">
+          <i class="ti ti-search"></i>
+          <input type="text" id="forumSearch" placeholder="Buscar en foros..." onkeyup="searchForums()">
+        </div>
+        <div class="navbar__right">
+          <a href="/albumbyalbum/pages/perfil.html" class="avatar avatar--md avatar--purple user-avatar">JM</a>
+          <button class="btn--ghost btn" onclick="logout()"><i class="ti ti-logout"></i></button>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <main class="container">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+      <div>
+        <h1 class="display" style="font-size: 2rem;">Foros</h1>
+        <p class="text-muted">Discute sobre música con la comunidad</p>
+      </div>
+      <button class="btn btn--primary" onclick="openCreateForumModal()">
+        <i class="ti ti-plus"></i> Crear foro
+      </button>
+    </div>
+
+    <!-- Filtros -->
+    <div class="flex gap-8 mb-24 wrap">
+      <button class="btn btn--secondary btn--sm filter-btn active" onclick="filterForums('todos', this)">📌 Todos</button>
+      <button class="btn btn--secondary btn--sm filter-btn" onclick="filterForums('rock', this)">🎸 Rock</button>
+      <button class="btn btn--secondary btn--sm filter-btn" onclick="filterForums('jazz', this)">🎷 Jazz</button>
+      <button class="btn btn--secondary btn--sm filter-btn" onclick="filterForums('postrock', this)">🏔️ Post-Rock</button>
+      <button class="btn btn--secondary btn--sm filter-btn" onclick="filterForums('electronic', this)">🎹 Electrónica</button>
+      <button class="btn btn--secondary btn--sm filter-btn" onclick="filterForums('pop', this)">🎤 Pop</button>
+      <button class="btn btn--secondary btn--sm filter-btn" onclick="filterForums('metal', this)">🤘 Metal</button>
+    </div>
+
+    <!-- Foros destacados -->
+    <div class="section-label mb-12">🔥 FOROS DESTACADOS</div>
+    <div id="featured-forums" class="mb-24">
+      <div class="card mb-12">
+        <div class="flex items-center gap-12" style="justify-content: space-between;">
+          <div>
+            <h3>🎸 ¿Cuál es el mejor álbum de los 90s?</h3>
+            <p class="text-sm text-muted">Discusión activa · 47 respuestas</p>
+          </div>
+          <button class="btn btn--primary btn--sm" onclick="openForum('featured1')">Participar</button>
+        </div>
+      </div>
+      <div class="card">
+        <div class="flex items-center gap-12" style="justify-content: space-between;">
+          <div>
+            <h3>🎷 Recomendaciones de Jazz para principiantes</h3>
+            <p class="text-sm text-muted">23 respuestas · Última actividad hoy</p>
+          </div>
+          <button class="btn btn--primary btn--sm" onclick="openForum('featured2')">Participar</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="section-label mb-12">💬 TODOS LOS FOROS</div>
+    <div id="forums-container"></div>
+  </main>
+
+  <!-- MODAL CREAR FORO -->
+  <div id="createForumModal" class="modal">
+    <div class="modal__content">
+      <div class="modal__header">
+        <h3>➕ Crear nuevo foro</h3>
+        <span class="modal__close" onclick="closeModal('createForumModal')">&times;</span>
+      </div>
+      <div class="modal__body">
+        <div class="form-group">
+          <label>Nombre del foro *</label>
+          <input type="text" id="forumName" placeholder="Ej: Fans de Radiohead">
+        </div>
+        <div class="form-group">
+          <label>Descripción</label>
+          <textarea id="forumDescription" rows="2" placeholder="¿De qué trata este foro?"></textarea>
+        </div>
+        <div class="form-group">
+          <label>Categoría</label>
+          <select id="forumCategory">
+            <option value="rock">🎸 Rock</option>
+            <option value="jazz">🎷 Jazz</option>
+            <option value="postrock">🏔️ Post-Rock</option>
+            <option value="electronic">🎹 Electrónica</option>
+            <option value="pop">🎤 Pop</option>
+            <option value="metal">🤘 Metal</option>
+            <option value="general">💬 General</option>
+          </select>
+        </div>
+      </div>
+      <div class="modal__footer">
+        <button class="btn btn--secondary" onclick="closeModal('createForumModal')">Cancelar</button>
+        <button class="btn btn--primary" onclick="createForum()">Crear foro</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL VER FORO -->
+  <div id="forumViewModal" class="modal"></div>
+
+  <div class="toast"></div>
+  <script src="/albumbyalbum/js/main.js"></script>
+
+  <script>
+    let currentForumId = null;
+
+    function openCreateForumModal() {
+      const modal = document.getElementById('createForumModal');
+      if (modal) modal.classList.add('active');
+    }
+
+    function createForum() {
+      const name = document.getElementById('forumName').value.trim();
+      const description = document.getElementById('forumDescription').value.trim();
+      const category = document.getElementById('forumCategory').value;
+      
+      if (!name) {
+        showToast('Ingresa un nombre para el foro', 'error');
+        return;
+      }
+      
+      const forums = JSON.parse(localStorage.getItem('soundlog_forums') || '{}');
+      const newForum = {
+        id: 'forum_' + Date.now(),
+        name: name,
+        description: description || 'Sin descripción',
+        category: category,
+        createdBy: currentUser?.id || 'system',
+        createdByUsername: currentUser?.username || 'Usuario',
+        createdAt: new Date().toISOString(),
+        postsCount: 0
+      };
+      
+      forums[newForum.id] = newForum;
+      localStorage.setItem('soundlog_forums', JSON.stringify(forums));
+      
+      showToast('Foro creado exitosamente', 'success');
+      closeModal('createForumModal');
+      loadForums();
+      
+      // Limpiar formulario
+      document.getElementById('forumName').value = '';
+      document.getElementById('forumDescription').value = '';
+    }
+
+    function openForum(forumId) {
+      currentForumId = forumId;
+      const forums = JSON.parse(localStorage.getItem('soundlog_forums') || '{}');
+      const forum = forums[forumId];
+      const posts = JSON.parse(localStorage.getItem('soundlog_forum_posts') || '{}');
+      const forumPosts = Object.values(posts).filter(p => p.forumId === forumId).sort((a,b) => new Date(b.createdAt) - new Date(a.createdAt));
+      
+      let postsHtml = '';
+      if (forumPosts.length === 0) {
+        postsHtml = '<div class="empty-state"><i class="ti ti-message"></i><p>Todavía no hay publicaciones. ¡Sé el primero!</p></div>';
+      } else {
+        forumPosts.forEach(post => {
+          postsHtml += `
+            <div class="review">
+              <div class="review__header">
+                <div class="avatar avatar--sm avatar--purple">${post.username?.substring(0,2).toUpperCase() || 'U'}</div>
+                <div class="review__meta">
+                  <div class="review__who">
+                    <strong>${post.username || 'Usuario'}</strong>
+                    <span class="text-xs text-hint">${getTimeAgo(new Date(post.createdAt))}</span>
+                  </div>
+                  <div class="review__text" style="margin-top:8px;">${post.content}</div>
+                </div>
+              </div>
+            </div>
+          `;
+        });
+      }
+      
+      const modalHtml = `
+        <div class="modal active" id="forumModal" style="display:flex;">
+          <div class="modal__content" style="max-width:600px; width:90%;">
+            <div class="modal__header">
+              <h3>${forum.name}</h3>
+              <span class="modal__close" onclick="closeModal('forumModal')">&times;</span>
+            </div>
+            <div class="modal__body" style="max-height:60vh; overflow-y:auto;">
+              <div class="mb-16">
+                <p class="text-sm text-muted">${forum.description}</p>
+                <span class="badge badge--muted">${getCategoryIcon(forum.category)} ${forum.category}</span>
+              </div>
+              <div class="section-label mb-8">💬 PUBLICACIONES</div>
+              ${postsHtml}
+              <div class="form-group mt-16">
+                <label>Escribe algo...</label>
+                <textarea id="newPostContent" rows="3" placeholder="Comparte tu opinión..."></textarea>
+              </div>
+            </div>
+            <div class="modal__footer">
+              <button class="btn btn--secondary" onclick="closeModal('forumModal')">Cancelar</button>
+              <button class="btn btn--primary" onclick="submitForumPost()">Publicar</button>
+            </div>
+          </div>
+        </div>
+      `;
+      
+      // Remover modal existente y agregar nuevo
+      const existingModal = document.getElementById('forumModal');
+      if (existingModal) existingModal.remove();
+      document.body.insertAdjacentHTML('beforeend', modalHtml);
+    }
+
+    function submitForumPost() {
+      const content = document.getElementById('newPostContent')?.value.trim();
+      if (!content) {
+        showToast('Escribe algo para publicar', 'error');
+        return;
+      }
+      
+      const posts = JSON.parse(localStorage.getItem('soundlog_forum_posts') || '{}');
+      const newPost = {
+        id: Date.now().toString(),
+        forumId: currentForumId,
+        userId: currentUser.id,
+        username: currentUser.username,
+        content: content,
+        createdAt: new Date().toISOString(),
+        replies: []
+      };
+      
+      posts[newPost.id] = newPost;
+      localStorage.setItem('soundlog_forum_posts', JSON.stringify(posts));
+      
+      // Actualizar contador
+      const forums = JSON.parse(localStorage.getItem('soundlog_forums') || '{}');
+      if (forums[currentForumId]) {
+        forums[currentForumId].postsCount = (forums[currentForumId].postsCount || 0) + 1;
+        localStorage.setItem('soundlog_forums', JSON.stringify(forums));
+      }
+      
+      showToast('Publicación creada', 'success');
+      closeModal('forumModal');
+      loadForums();
+    }
+
+    function searchForums() {
+      const searchTerm = document.getElementById('forumSearch').value.toLowerCase();
+      const forums = JSON.parse(localStorage.getItem('soundlog_forums') || '{}');
+      const container = document.getElementById('forums-container');
+      
+      let forumsList = Object.values(forums);
+      
+      if (currentForumFilter !== 'todos') {
+        forumsList = forumsList.filter(f => f.category === currentForumFilter);
+      }
+      
+      if (searchTerm) {
+        forumsList = forumsList.filter(f => 
+          f.name.toLowerCase().includes(searchTerm) || 
+          f.description.toLowerCase().includes(searchTerm)
+        );
+      }
+      
+      if (forumsList.length === 0) {
+        container.innerHTML = '<div class="empty-state"><i class="ti ti-message-circle"></i><p>No se encontraron foros</p></div>';
+        return;
+      }
+      
+      let html = '';
+      forumsList.forEach(forum => {
+        html += `
+          <div class="card mb-16" onclick="openForum('${forum.id}')" style="cursor:pointer;">
+            <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+              <div>
+                <h3 style="margin-bottom:4px;">${getCategoryIcon(forum.category)} ${forum.name}</h3>
+                <p class="text-sm text-muted">${forum.description}</p>
+                <div class="flex gap-12 mt-8">
+                  <span class="text-xs text-muted"><i class="ti ti-message"></i> ${forum.postsCount || 0} publicaciones</span>
+                  <span class="badge badge--muted">${forum.category}</span>
+                </div>
+              </div>
+              <i class="ti ti-chevron-right" style="color:var(--text-muted);"></i>
+            </div>
+          </div>
+        `;
+      });
+      
+      container.innerHTML = html;
+    }
+
+    // Sobrescribir loadForums para usar búsqueda
+    const originalLoadForums = window.loadForums;
+    window.loadForums = function() {
+      searchForums();
+    };
+  </script>
+</body>
+</html>
