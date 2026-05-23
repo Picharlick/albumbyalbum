@@ -4,11 +4,17 @@ const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 let currentUser = null;
 
+// Función auxiliar para redirigir al login de forma inteligente
+function irAlLogin() {
+  const enPages = window.location.pathname.includes('/pages/');
+  window.location.href = enPages ? 'login.html' : 'pages/login.html';
+}
+
 async function init() {
   const savedUser = localStorage.getItem('soundlog_current_user');
   
   if (!savedUser) {
-    window.location.href = '/albumbyalbum/pages/login.html';
+    irAlLogin();
     return;
   }
   
@@ -18,7 +24,7 @@ async function init() {
   
   if (error || !data) {
     localStorage.removeItem('soundlog_current_user');
-    window.location.href = '/albumbyalbum/pages/login.html';
+    irAlLogin();
     return;
   }
   
@@ -69,7 +75,11 @@ async function submitAlbum() {
 
 function openAddAlbumModal() { document.getElementById('addAlbumModal').classList.add('active'); }
 function closeModal(id) { document.getElementById(id).classList.remove('active'); }
-function logout() { localStorage.removeItem('soundlog_current_user'); window.location.href = '/albumbyalbum/pages/login.html'; }
+
+function logout() { 
+  localStorage.removeItem('soundlog_current_user'); 
+  irAlLogin(); 
+}
 
 window.openAddAlbumModal = openAddAlbumModal;
 window.closeModal = closeModal;
