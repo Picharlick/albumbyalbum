@@ -661,9 +661,11 @@ function showToast(message, type) {
   setTimeout(() => toast.classList.remove('show'), 3000);
 }
 
-function logout() {
-  localStorage.removeItem(STORAGE_KEYS.CURRENT_USER);
-  window.location.href = '/albumbyalbum/pages/login.html';
+if (!savedUser) {
+    if (!window.location.pathname.includes('login.html')) {
+        window.location.href = 'pages/login.html';  // Ruta relativa
+    }
+    return;
 }
 
 function escapeHtml(str) {
