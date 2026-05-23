@@ -110,6 +110,7 @@
 
     let isLoginMode = true;
 
+    // Inicializar usuarios vacíos si no existe
     if (!localStorage.getItem(STORAGE_KEYS.USERS)) {
       localStorage.setItem(STORAGE_KEYS.USERS, JSON.stringify({}));
     }
@@ -164,8 +165,9 @@
       const users = JSON.parse(localStorage.getItem(STORAGE_KEYS.USERS) || '{}');
       const user = users[username];
       
+      // Verificar que el usuario existe Y que la contraseña coincide
       if (user && user.password === password) {
-        // Eliminar la contraseña antes de guardar en sesión por seguridad
+        // Guardar sesión sin la contraseña por seguridad
         const userWithoutPassword = { ...user };
         delete userWithoutPassword.password;
         localStorage.setItem(STORAGE_KEYS.CURRENT_USER, JSON.stringify(userWithoutPassword));
@@ -174,9 +176,9 @@
           window.location.href = '/albumbyalbum/';
         }, 500);
       } else if (user && user.password !== password) {
-        showToast('Contraseña incorrecta', 'error');
+        showToast('❌ Contraseña incorrecta', 'error');
       } else {
-        showToast('Usuario no encontrado. ¿Quieres registrarte?', 'error');
+        showToast('❌ Usuario no encontrado. ¿Quieres registrarte?', 'error');
       }
     }
 
@@ -232,7 +234,7 @@
       delete userWithoutPassword.password;
       localStorage.setItem(STORAGE_KEYS.CURRENT_USER, JSON.stringify(userWithoutPassword));
       
-      showToast('¡Cuenta creada exitosamente!', 'success');
+      showToast('✅ ¡Cuenta creada exitosamente!', 'success');
       setTimeout(() => {
         window.location.href = '/albumbyalbum/';
       }, 500);
