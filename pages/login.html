@@ -30,11 +30,22 @@
       text-align: center;
       margin-bottom: 24px;
       display: block;
+      text-decoration: none;
+      color: var(--text-primary);
     }
     .navbar__logo span { color: #a89cf9; }
     .btn-full { width: 100%; justify-content: center; }
     .auth-switch { text-align: center; margin-top: 24px; font-size: 0.85rem; color: #9b9aaa; }
     .auth-switch a { color: #a89cf9; cursor: pointer; }
+    .debug-info {
+      margin-top: 20px;
+      padding: 10px;
+      background: rgba(0,0,0,0.3);
+      border-radius: 8px;
+      font-size: 10px;
+      color: #666;
+      text-align: center;
+    }
   </style>
 </head>
 <body>
@@ -46,11 +57,11 @@
       <div id="login-form">
         <div class="form-group">
           <label>Usuario</label>
-          <input type="text" id="login-username" placeholder="ej: juan_music">
+          <input type="text" id="login-username" placeholder="ej: juan_music" autocomplete="off">
         </div>
         <div class="form-group">
           <label>Contraseña</label>
-          <input type="password" id="login-password" placeholder="••••••••">
+          <input type="password" id="login-password" placeholder="••••••••" autocomplete="off">
         </div>
         <button class="btn btn--primary btn-full" onclick="handleLogin()">
           <i class="ti ti-login"></i> Iniciar sesión
@@ -60,23 +71,23 @@
       <div id="register-form" style="display: none;">
         <div class="form-group">
           <label>Usuario *</label>
-          <input type="text" id="register-username" placeholder="mi_usuario">
+          <input type="text" id="register-username" placeholder="mi_usuario" autocomplete="off">
         </div>
         <div class="form-group">
           <label>Email *</label>
-          <input type="email" id="register-email" placeholder="usuario@ejemplo.com">
+          <input type="email" id="register-email" placeholder="usuario@ejemplo.com" autocomplete="off">
         </div>
         <div class="form-group">
           <label>Contraseña *</label>
-          <input type="password" id="register-password" placeholder="••••••••">
+          <input type="password" id="register-password" placeholder="••••••••" autocomplete="off">
         </div>
         <div class="form-group">
           <label>Confirmar contraseña</label>
-          <input type="password" id="register-confirm" placeholder="••••••••">
+          <input type="password" id="register-confirm" placeholder="••••••••" autocomplete="off">
         </div>
         <div class="form-group">
           <label>¿Cómo te llamas? (opcional)</label>
-          <input type="text" id="register-name" placeholder="Tu nombre">
+          <input type="text" id="register-name" placeholder="Tu nombre" autocomplete="off">
         </div>
         <button class="btn btn--primary btn-full" onclick="handleRegister()">
           <i class="ti ti-user-plus"></i> Registrarse
@@ -85,6 +96,11 @@
       
       <div class="auth-switch">
         <span id="switch-text">¿No tienes cuenta? <a onclick="toggleAuthMode()">Regístrate</a></span>
+      </div>
+      
+      <!-- Info de depuración -->
+      <div class="debug-info" id="debugInfo">
+        👇 Datos de prueba
       </div>
     </div>
   </div>
@@ -99,8 +115,19 @@
 
     let isLoginMode = true;
 
+    // Inicializar
     if (!localStorage.getItem(STORAGE_KEYS.USERS)) {
       localStorage.setItem(STORAGE_KEYS.USERS, JSON.stringify({}));
+    }
+
+    // Mostrar información de depuración
+    function updateDebugInfo() {
+      const users = JSON.parse(localStorage.getItem(STORAGE_KEYS.USERS) || '{}');
+      const userCount = Object.keys(users).length;
+      const debugDiv = document.getElementById('debugInfo');
+      if (debugDiv) {
+        debugDiv.innerHTML = `📱 Almacenamiento local: ${userCount} usuario${userCount !== 1 ? 's' : ''} registrado${userCount !== 1 ? 's' : ''}<br>🔍 ¿Problemas? Regístrate con un usuario NUEVO`;
+      }
     }
 
     function toggleAuthMode() {
@@ -121,6 +148,7 @@
         title.textContent = 'Registrarse';
         switchText.innerHTML = '¿Ya tienes cuenta? <a onclick="toggleAuthMode()">Inicia sesión</a>';
       }
+      updateDebugInfo();
     }
 
     function showToast(message, type) {
@@ -146,6 +174,9 @@
       const users = JSON.parse(localStorage.getItem(STORAGE_KEYS.USERS) || '{}');
       const user = users[username];
       
+      console.log('Intentando login:', username);
+      console.log('Usuarios registrados:', Object.keys(users));
+      
       if (user && user.password === password) {
         const userWithoutPassword = { ...user };
         delete userWithoutPassword.password;
@@ -155,8 +186,9 @@
       } else if (user && user.password !== password) {
         showToast('❌ Contraseña incorrecta', 'error');
       } else {
-        showToast('❌ Usuario no encontrado', 'error');
+        showToast(`❌ Usuario "${username}" no encontrado. ¿Quieres registrarte?`, 'error');
       }
+      updateDebugInfo();
     }
 
     function handleRegister() {
@@ -174,7 +206,7 @@
       if (password.length < 4) { showToast('La contraseña debe tener al menos 4 caracteres', 'error'); return; }
       
       const users = JSON.parse(localStorage.getItem(STORAGE_KEYS.USERS) || '{}');
-      if (users[username]) { showToast('Ese usuario ya existe', 'error'); return; }
+      if (users[username]) { showToast('Ese usuario ya existe. Elige otro', 'error'); return; }
       
       const newUser = {
         id: 'user_' + Date.now(),
@@ -197,9 +229,13 @@
       delete userWithoutPassword.password;
       localStorage.setItem(STORAGE_KEYS.CURRENT_USER, JSON.stringify(userWithoutPassword));
       
-      showToast('✅ ¡Cuenta creada!', 'success');
+      showToast('✅ ¡Cuenta creada exitosamente!', 'success');
       setTimeout(() => { window.location.href = '../index.html'; }, 500);
+      updateDebugInfo();
     }
+
+    // Ejecutar al cargar
+    updateDebugInfo();
   </script>
 </body>
 </html>
