@@ -110,11 +110,10 @@
 
       <!-- FEED CENTRAL -->
       <section>
-        <div style="display: flex; gap: 12px; margin-bottom: 16px;">
-          <div class="feed-tabs" style="flex:1;">
-            <button class="feed-tab active" onclick="switchTab(this)">Global</button>
-          </div>
-          <button class="btn btn--primary btn--sm" onclick="openAddAlbumModal()"><i class="ti ti-plus"></i> Nuevo</button>
+        <div class="feed-tabs" style="margin-bottom: 16px;">
+          <button class="feed-tab active" onclick="switchTab(this)">Amigos</button>
+          <button class="feed-tab" onclick="switchTab(this)">Global</button>
+          <button class="feed-tab" onclick="switchTab(this)">Popular</button>
         </div>
         <div class="card" id="feed-container"></div>
       </section>
