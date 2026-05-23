@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Soundlog — Feed</title>
+  <link rel="stylesheet" href="/albumbyalbum/css/styles.css" />
+  <!-- Tabler icons -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.9.0/dist/tabler-icons.min.css" />
+</head>
+<body>
+
+  <!-- ==============================
+       NAVBAR
+  =============================== -->
+  <nav class="navbar">
+    <div class="container">
+      <div class="navbar__inner">
+
+        <a href="/albumbyalbum/" class="navbar__logo display">
+          Sound<span>log</span>
+        </a>
+
+        <nav class="navbar__nav">
+          <a href="/albumbyalbum/"   class="navbar__link active"><i class="ti ti-home"></i> Feed</a>
+          <a href="/albumbyalbum/pages/explorar.html" class="navbar__link"><i class="ti ti-compass"></i> Explorar</a>
+          <a href="/albumbyalbum/pages/foros.html"   class="navbar__link"><i class="ti ti-message-circle"></i> Foros</a>
+          <a href="/albumbyalbum/pages/stats.html"   class="navbar__link"><i class="ti ti-chart-bar"></i> Stats</a>
+        </nav>
+
+        <div class="navbar__search">
+          <i class="ti ti-search" style="flex-shrink:0;"></i>
+          <input type="text" placeholder="Buscar álbumes, artistas..." />
+        </div>
+
+        <div class="navbar__right">
+          <button class="btn--ghost btn" title="Notificaciones">
+            <i class="ti ti-bell" style="font-size:18px;"></i>
+          </button>
+          <a href="/albumbyalbum/pages/perfil.html" class="avatar avatar--md avatar--purple" title="Mi perfil">JM</a>
+        </div>
+
+      </div>
+    </div>
+  </nav>
+
+  <!-- ==============================
+       MAIN CONTENT
+  =============================== -->
+  <main class="container">
+    <div class="page-grid">
+
+      <!-- ===== SIDEBAR IZQUIERDA ===== -->
+      <aside>
+
+        <!-- Now Playing -->
+        <div class="now-playing">
+          <div class="now-playing__dot"></div>
+          <div class="now-playing__info">
+            <div class="now-playing__label">
+              <i class="ti ti-brand-spotify"></i> Escuchando ahora
+            </div>
+            <div class="now-playing__track">Paranoid Android</div>
+            <div class="now-playing__artist">Radiohead · OK Computer</div>
+          </div>
+        </div>
+
+        <!-- Perfil rápido -->
+        <div class="card mb-16">
+          <div class="flex items-center gap-10 mb-12">
+            <a href="/albumbyalbum/pages/perfil.html" class="avatar avatar--lg avatar--purple">JM</a>
+            <div>
+              <div style="font-size:0.9rem; font-weight:500;">juan_music</div>
+              <div class="text-sm text-muted">342 álbumes · 58 reseñas</div>
+            </div>
+          </div>
+          <div class="grid-2">
+            <div class="stat-mini">
+              <div class="stat-mini__num">342</div>
+              <div class="stat-mini__label">Álbumes</div>
+            </div>
+            <div class="stat-mini">
+              <div class="stat-mini__num">127</div>
+              <div class="stat-mini__label">Siguiendo</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Géneros de la semana -->
+        <div class="card mb-16">
+          <div class="section-label">Géneros · esta semana</div>
+          <div class="genre-row">
+            <div class="genre-row__header">
+              <span class="text-sm">Rock alternativo</span>
+              <span class="text-sm" style="color:var(--accent-light);">42%</span>
+            </div>
+            <div class="genre-row__bar"><div class="genre-row__fill" style="width:42%;"></div></div>
+          </div>
+          <div class="genre-row">
+            <div class="genre-row__header">
+              <span class="text-sm">Jazz</span>
+              <span class="text-sm" style="color:var(--accent-light);">28%</span>
+            </div>
+            <div class="genre-row__bar"><div class="genre-row__fill" style="width:28%;"></div></div>
+          </div>
+          <div class="genre-row">
+            <div class="genre-row__header">
+              <span class="text-sm">Post-rock</span>
+              <span class="text-sm" style="color:var(--accent-light);">18%</span>
+            </div>
+            <div class="genre-row__bar"><div class="genre-row__fill" style="width:18%;"></div></div>
+          </div>
+          <div class="genre-row">
+            <div class="genre-row__header">
+              <span class="text-sm">Electrónica</span>
+              <span class="text-sm" style="color:var(--accent-light);">12%</span>
+            </div>
+            <div class="genre-row__bar"><div class="genre-row__fill" style="width:12%;"></div></div>
+          </div>
+          <a href="/albumbyalbum/pages/stats.html" class="text-xs text-accent" style="display:block; margin-top:10px;">
+            Ver todas mis estadísticas →
+          </a>
+        </div>
+
+        <!-- Navegación adicional -->
+        <div class="card">
+          <div class="section-label">Mis listas</div>
+          <ul>
+            <li style="padding:6px 0; border-bottom:1px solid var(--border);">
+              <a href="#" class="flex items-center gap-8 text-sm" style="color:var(--text-secondary);">
+                <i class="ti ti-check" style="color:var(--green);"></i> Álbumes escuchados
+                <span class="text-hint" style="margin-left:auto;">342</span>
+              </a>
+            </li>
+            <li style="padding:6px 0; border-bottom:1px solid var(--border);">
+              <a href="#" class="flex items-center gap-8 text-sm" style="color:var(--text-secondary);">
+                <i class="ti ti-bookmark" style="color:var(--accent-light);"></i> Quiero escuchar
+                <span class="text-hint" style="margin-left:auto;">89</span>
+              </a>
+            </li>
+            <li style="padding:6px 0;">
+              <a href="#" class="flex items-center gap-8 text-sm" style="color:var(--text-secondary);">
+                <i class="ti ti-list" style="color:#ff9070;"></i> Mis listas
+                <span class="text-hint" style="margin-left:auto;">7</span>
+              </a>
+            </li>
+          </ul>
+        </div>
+
+      </aside>
+
+      <!-- ===== FEED CENTRAL ===== -->
+      <section>
+
+        <!-- Tabs -->
+        <div class="feed-tabs">
+          <button class="feed-tab active" onclick="switchTab(this)">Amigos</button>
+          <button class="feed-tab"        onclick="switchTab(this)">Global</button>
+          <button class="feed-tab"        onclick="switchTab(this)">Popular</button>
+        </div>
+
+        <!-- Destacado foro activo -->
+        <div class="forum-highlight mb-12">
+          <i class="ti ti-flame" style="font-size:20px; color:var(--accent-light); flex-shrink:0;"></i>
+          <div style="flex:1; min-width:0;">
+            <div style="font-size:0.85rem; font-weight:500; margin-bottom:2px;">¿El mejor álbum de rock de los 90s?</div>
+            <div class="text-xs text-muted">47 respuestas · Muy activo ahora</div>
+          </div>
+          <a href="/albumbyalbum/pages/foros.html" class="btn btn--secondary btn--xs">Ver foro</a>
+        </div>
+
+        <!-- Tarjetas de actividad -->
+        <div class="card">
+
+          <!-- Review completa -->
+          <div class="review">
+            <div class="review__header">
+              <a href="/albumbyalbum/pages/perfil.html" class="avatar avatar--md avatar--coral">AM</a>
+              <div class="review__meta">
+                <div class="review__who">
+                  <strong>ana_melodies</strong>
+                  <span class="text-muted">escuchó y reseñó</span>
+                  <strong>In Rainbows</strong>
+                  <span class="badge badge--accent">Radiohead</span>
+                </div>
+                <div class="flex items-center gap-8">
+                  <div class="stars">
+                    <span class="star">★</span><span class="star">★</span>
+                    <span class="star">★</span><span class="star">★</span><span class="star">★</span>
+                  </div>
+                  <span class="text-xs text-hint">Hace 2 horas</span>
+                </div>
+              </div>
+              <div class="review__album-thumb">🌊</div>
+            </div>
+            <div class="review__text">
+              Una obra maestra atemporal. "Reckoner" y "House of Cards" siguen siendo dos de las
+              canciones más emotivas que he escuchado. Radiohead en su momento más vulnerable y más brillante.
+            </div>
+            <div class="review__actions">
+              <button class="review__action" onclick="toggleLike(this)">
+                <i class="ti ti-heart"></i> <span>24</span>
+              </button>
+              <button class="review__action">
+                <i class="ti ti-message-circle"></i> 5 comentarios
+              </button>
+              <button class="review__action">
+                <i class="ti ti-bookmark"></i> Guardar
+              </button>
+            </div>
+          </div>
+
+          <!-- Lista compartida -->
+          <div class="review">
+            <div class="review__header">
+              <a href="#" class="avatar avatar--md avatar--teal">CR</a>
+              <div class="review__meta">
+                <div class="review__who">
+                  <strong>carlos_rock</strong>
+                  <span class="text-muted">creó una lista</span>
+                  <strong>"Álbumes de los 2000s que me marcaron"</strong>
+                </div>
+                <span class="text-xs text-hint">Hace 4 horas</span>
+              </div>
+            </div>
+            <div class="flex gap-6 wrap mb-8">
+              <span class="badge badge--muted">🎸 Is This It</span>
+              <span class="badge badge--muted">🌙 Turn On the Bright Lights</span>
+              <span class="badge badge--muted">🔮 Elephant</span>
+              <span class="badge badge--muted">+3 más</span>
+            </div>
+            <div class="review__actions">
+              <button class="review__action">
+                <i class="ti ti-heart"></i> 11
+              </button>
+              <button class="review__action">
+                <i class="ti ti-eye"></i> Ver lista completa
+              </button>
+            </div>
+          </div>
+
+          <!-- Calificación sin reseña -->
+          <div class="review">
+            <div class="review__header">
+              <a href="#" class="avatar avatar--md avatar--pink">VP</a>
+              <div class="review__meta">
+                <div class="review__who">
+                  <strong>valeria_pop</strong>
+                  <span class="text-muted">calificó</span>
+                  <strong>Blonde</strong>
+                  <span class="badge badge--accent">Frank Ocean</span>
+                </div>
+                <div class="flex items-center gap-8">
+                  <div class="stars">
+                    <span class="star">★</span><span class="star">★</span>
+                    <span class="star">★</span><span class="star">★</span>
+                    <span class="star--empty star">★</span>
+                  </div>
+                  <span class="text-xs text-hint">Hace 5 horas</span>
+                </div>
+              </div>
+              <div class="review__album-thumb">🌿</div>
+            </div>
+            <div class="review__actions">
+              <button class="review__action">
+                <i class="ti ti-heart"></i> 8
+              </button>
+              <button class="review__action">
+                <i class="ti ti-message-circle"></i> Comentar
+              </button>
+            </div>
+          </div>
+
+        </div><!-- /card feed -->
+
+      </section>
+
+      <!-- ===== SIDEBAR DERECHA ===== -->
+      <aside>
+
+        <!-- Activo ahora -->
+        <div class="card mb-16">
+          <div class="section-label"><span class="dot-live"></span> Activo ahora</div>
+          <div class="sidebar-item">
+            <div class="avatar avatar--sm avatar--purple">AM</div>
+            <div class="sidebar-item__info">
+              <div class="sidebar-item__name">ana_melodies</div>
+              <div class="sidebar-item__sub">Kid A · Radiohead</div>
+            </div>
+          </div>
+          <div class="sidebar-item">
+            <div class="avatar avatar--sm avatar--coral">CR</div>
+            <div class="sidebar-item__info">
+              <div class="sidebar-item__name">carlos_rock</div>
+              <div class="sidebar-item__sub">Kind of Blue · Miles Davis</div>
+            </div>
+          </div>
+          <div class="sidebar-item">
+            <div class="avatar avatar--sm avatar--teal">MF</div>
+            <div class="sidebar-item__info">
+              <div class="sidebar-item__name">marta_folk</div>
+              <div class="sidebar-item__sub">Blue · Joni Mitchell</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Álbum del día -->
+        <div class="card mb-16">
+          <div class="section-label">Álbum del día</div>
+          <div class="album-day">
+            <div class="album-day__cover">🏔️</div>
+            <div class="album-day__title">Lift Your Skinny Fists</div>
+            <div class="album-day__artist">Godspeed You! Black Emperor</div>
+            <div class="stars" style="justify-content:center;">
+              <span class="star">★</span><span class="star">★</span><span class="star">★</span>
+              <span class="star">★</span><span class="star">★</span>
+            </div>
+          </div>
+          <a href="/albumbyalbum/pages/album.html" class="btn btn--secondary btn--sm" style="width:100%; justify-content:center;">
+            Ver reseñas de la comunidad
+          </a>
+        </div>
+
+        <!-- Foros populares -->
+        <div class="card">
+          <div class="section-label">Foros populares</div>
+          <div class="sidebar-item">
+            <span style="font-size:18px;">🎸</span>
+            <div class="sidebar-item__info">
+              <div class="sidebar-item__name">Rock alternativo</div>
+              <div class="sidebar-item__sub">1.2k miembros</div>
+            </div>
+          </div>
+          <div class="sidebar-item">
+            <span style="font-size:18px;">🎷</span>
+            <div class="sidebar-item__info">
+              <div class="sidebar-item__name">Jazz &amp; Soul</div>
+              <div class="sidebar-item__sub">876 miembros</div>
+            </div>
+          </div>
+          <div class="sidebar-item">
+            <span style="font-size:18px;">🌊</span>
+            <div class="sidebar-item__info">
+              <div class="sidebar-item__name">Indie &amp; Post-rock</div>
+              <div class="sidebar-item__sub">654 miembros</div>
+            </div>
+          </div>
+          <div class="sidebar-item">
+            <span style="font-size:18px;">🎹</span>
+            <div class="sidebar-item__info">
+              <div class="sidebar-item__name">Música clásica</div>
+              <div class="sidebar-item__sub">412 miembros</div>
+            </div>
+          </div>
+          <a href="/albumbyalbum/pages/foros.html" class="text-xs text-accent" style="display:block; margin-top:10px;">
+            Ver todos los foros →
+          </a>
+        </div>
+
+      </aside>
+
+    </div><!-- /page-grid -->
+  </main>
+
+  <script src="/albumbyalbum/js/main.js"></script>
+</body>
+</html>
